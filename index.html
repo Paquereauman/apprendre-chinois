@@ -179,6 +179,15 @@ nav#bn button:hover{background:#fff3d6}
 <div id="hp"><i></i></div></header>
 <div id="crumb"></div>
 <main id="app"></main>
+<div id="prof" class="sheet" onclick="if(event.target===this)profClose()"><div class="sbox">
+ <h3 style="margin:0 0 6px">👤 Mon profil</h3>
+ <p style="font-size:.88rem;color:var(--mut);margin:0 0 10px">Choisis un nom et un mot de passe. Entre les mêmes sur un autre appareil pour retrouver ta progression. Si le profil n'existe pas encore, il est créé.</p>
+ <input id="pn" placeholder="Nom" autocomplete="username" autocapitalize="none" style="width:100%;padding:12px;margin:4px 0;font-size:16px;border:1px solid #ccc;border-radius:10px">
+ <input id="pp" type="password" placeholder="Mot de passe (6 caractères minimum)" autocomplete="current-password" style="width:100%;padding:12px;margin:4px 0;font-size:16px;border:1px solid #ccc;border-radius:10px" onkeydown="if(event.key==='Enter')profGo()">
+ <p id="pmsg" style="font-size:.85rem;color:#c0392b;min-height:1.2em;margin:4px 0"></p>
+ <small style="color:var(--mut)">⚠️ Il n'y a pas de « mot de passe oublié » : note-le bien.</small>
+ <div class="nav"><button onclick="profGo()">Se connecter / créer</button><button class="alt" onclick="profClose()">Annuler</button></div>
+</div></div>
 <div id="setp" class="sheet" onclick="if(event.target===this)closeSet()"><div class="sbox">
  <h3 style="margin:0 0 6px">⚙️ Réglages</h3>
  <div class="srow"><span>🌱 Niveau</span><span><button class="alt" onclick="setLvl('A1');closeSet()">A1</button> <button class="alt" onclick="setLvl('A2');closeSet()">A2</button> <button class="alt" onclick="setLvl('B1');closeSet()">B1</button></span></div>
@@ -466,12 +475,31 @@ async function pull(){try{const r=await fetch(API+"?k="+CODE,{cache:"no-store"})
   if(chS){S=M;syncKnown();try{localStorage.setItem("zhA1",JSON.stringify(S))}catch(e){}head();if(cur)cur()}
   if(chR)push();else setCloud("☁️ ✓")}catch(e){setCloud("☁️ ⚠️")}}
 async function cloudInfo(){const el=document.getElementById("ci");if(!el)return;el.textContent="…";try{const r=await fetch(API+"?k="+CODE,{cache:"no-store"}),t=await r.text(),R=t.trim()==="null"?null:JSON.parse(t);
-  el.innerHTML=`Ce navigateur : <b>${wordsIn(S)}</b> mots · ${S.xp||0} XP<br>Serveur : <b>${R?wordsIn(R):"rien"}</b> mots${R?" · "+(R.xp||0)+" XP":""}<br>Code : <b>${CODE}</b>`}catch(e){el.textContent="Serveur injoignable"}}
+  el.innerHTML=`Ce navigateur : <b>${wordsIn(S)}</b> mots · ${S.xp||0} XP<br>Serveur : <b>${R?wordsIn(R):"rien"}</b> mots${R?" · "+(R.xp||0)+" XP":""}${PNAME?"<br>Profil : <b>"+PNAME.replace(/</g,"&lt;")+"</b>":""}`}catch(e){el.textContent="Serveur injoignable"}}
 function forcePush(){setCloud("☁️…");push().then(cloudInfo)}
 function exportS(){const b=new Blob([JSON.stringify(S)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="progression-chinois-"+tdy()+".json";a.click()}
 function importS(inp){const f=inp.files[0];if(!f)return;f.text().then(t=>{const R=JSON.parse(t);S=mergeS(S,R);S.ts=Date.now();syncKnown();save();head();home();closeSet();toast("📥 Progression importée et fusionnée")}).catch(()=>alert("Fichier invalide"))}
-function setCode(){const c=(prompt("Entre ton code de sauvegarde (8 à 40 lettres/chiffres minuscules) pour retrouver ta progression :")||"").trim().toLowerCase();
-  if(!/^[a-z0-9]{8,40}$/.test(c))return c&&alert("Code invalide.");CODE=c;try{localStorage.setItem("zhA1code",c)}catch(e){}S.ts=0;pull().then(()=>{if(cur)cur()})}
+/* profil : nom + mot de passe -> clé secrète dérivée (PBKDF2), identique sur tous les appareils */
+let PNAME="";try{PNAME=localStorage.getItem("zhA1name")||""}catch(e){}
+async function deriveKey(name,pw){const en=new TextEncoder(),km=await crypto.subtle.importKey("raw",en.encode(pw),"PBKDF2",false,["deriveBits"]);
+  const bits=await crypto.subtle.deriveBits({name:"PBKDF2",hash:"SHA-256",salt:en.encode("zhA1:"+name.trim().toLowerCase()),iterations:200000},km,160);
+  return [...new Uint8Array(bits)].map(b=>b.toString(16).padStart(2,"0")).join("")}
+function profOpen(){closeSet();const p=document.getElementById("prof");document.getElementById("pmsg").textContent="";document.getElementById("pn").value=PNAME;document.getElementById("pp").value="";p.classList.add("on")}
+function profClose(){document.getElementById("prof").classList.remove("on")}
+async function profGo(){const n=document.getElementById("pn").value.trim(),pw=document.getElementById("pp").value,m=document.getElementById("pmsg");
+  if(n.length<2||pw.length<6){m.textContent="Nom : 2 caractères minimum. Mot de passe : 6 minimum.";return}
+  if(!window.crypto||!crypto.subtle){m.textContent="Connexion impossible ici : ouvre le site en https.";return}
+  m.textContent="Connexion…";
+  try{const k=await deriveKey(n,pw),r=await fetch(API+"?k="+k,{cache:"no-store"});if(!r.ok)throw 0;const t=(await r.text()).trim();
+    if(t==="null"&&!confirm("Aucun profil « "+n+" » avec ce mot de passe.\nCréer ce nouveau profil ? Ta progression actuelle y sera enregistrée.\n(Si tu pensais te connecter, annule et vérifie le nom et le mot de passe.)")){m.textContent="";return}
+    CODE=k;PNAME=n;try{localStorage.setItem("zhA1code",k);localStorage.setItem("zhA1name",n)}catch(e){}
+    S.dismissSync=1;S.ts=0;await pull();profClose();head();if(cur)cur();toast(t==="null"?"✅ Profil créé":"✅ Connecté : "+n)}
+  catch(e){m.textContent="Serveur injoignable, réessaie dans un instant."}}
+function profOut(){if(!confirm("Se déconnecter ? Ta progression reste sur le serveur : reconnecte-toi avec ton nom et ton mot de passe."))return;
+  PNAME="";CODE=[...crypto.getRandomValues(new Uint8Array(12))].map(b=>"abcdefghjkmnpqrstuvwxyz23456789"[b%31]).join("");
+  try{localStorage.removeItem("zhA1name");localStorage.setItem("zhA1code",CODE);localStorage.removeItem("zhA1")}catch(e){}
+  S={xp:0,best:{},known:{},streak:0,last:"",py:true};location.reload()}
+const setCode=profOpen;
 const $=document.getElementById("app");
 const today=()=>new Date().toISOString().slice(0,10);
 function touchStreak(){const t=today();if(S.last===t)return;const y=new Date(Date.now()-864e5).toISOString().slice(0,10);S.streak=S.last===y?S.streak+1:1;S.last=t;save()}
@@ -572,7 +600,7 @@ function prioSection(){const pu=prioUnits();if(!pu.length)return "";
   const todo=pu.filter(u=>!u.mod).reduce((n,c)=>n+c.items.filter(it=>!(S.known[c.id]||[]).some(x=>nk(x)===nk(it[0]))).length,0);
   return `<h2>⭐ Mes priorités <small class="stp">à travailler en premier</small></h2><div class="grid">${pu.map(u=>stepCard(u.id)).join("")}</div>
   <div class="cat next" style="--c:#f4a300;margin-top:8px" onclick="prioStart()"><div class="ic">▶</div><b>Réviser mes priorités</b><small>${todo} mot${todo>1?"s":""} à travailler · quiz de 15 questions, mots non connus d'abord</small></div>`}
-function syncBanner(){if(S.xp||wordsIn(S)||S.dismissSync)return "";return `<div class="q" style="text-align:left;margin-bottom:10px"><b>🔑 Tu as déjà une progression ?</b><br><small style="color:var(--mut)">Chaque navigateur a sa propre mémoire. Pour retrouver ta progression ici, entre ton code de sauvegarde (visible dans ⚙️ sur ton autre navigateur).</small><div class="nav" style="justify-content:flex-start"><button onclick="setCode()">🔑 Entrer mon code</button><button class="alt" onclick="S.dismissSync=1;save();home()">Non, c'est nouveau</button></div></div>`}
+function syncBanner(){if(S.xp||wordsIn(S)||S.dismissSync)return "";return `<div class="q" style="text-align:left;margin-bottom:10px"><b>👤 Tu as déjà un profil ?</b><br><small style="color:var(--mut)">Connecte-toi avec ton nom et ton mot de passe pour retrouver ta progression, ou crée ton profil pour la garder sur tous tes appareils.</small><div class="nav" style="justify-content:flex-start"><button onclick="profOpen()">👤 Me connecter / créer un profil</button><button class="alt" onclick="S.dismissSync=1;save();home()">Non, c'est nouveau</button></div></div>`}
 function revCard(){const n=dueItems().length;if(n)return `<div class="cat next" style="--c:#2bb673" onclick="revStart()"><div class="ic">🔁</div><b>Révision du jour : ${n} mot${n>1?"s":""}</b><small>Révise avant d'oublier (répétition espacée)</small></div>`;
   return Object.keys(S.rev||{}).length?`<div class="eta ok" style="cursor:default">✅ Aucune révision à faire aujourd'hui</div>`:""}
 function openAny(id){if(id.startsWith("m:"))window[MODS[id.slice(2)].fn]();else openCat(id)}
@@ -1268,7 +1296,7 @@ function plan(){cur=plan;head();
   <div class="tiles"><div class="tile" onclick="testStart(1)"><span>⚡</span><b>Test rapide</b><small>${levelCats().length*2+6} questions · 1 mot par thème, testé 2 fois${S.testDate?" · dernier : "+S.testDate:""}</small></div>
   <div class="tile" onclick="testStart(2)"><span>📝</span><b>Test complet</b><small>${levelCats().length*4+6} questions · 2 mots par thème, plus fiable</small></div></div>
   <p style="color:var(--mut);font-size:.85rem">Un mot n'est « connu » qu'après 2 réussites dans 2 types de questions différents (dictée, pinyin, courbe de ton…). Le test comprend aussi des phrases à trous et à remettre en ordre.</p>
-  <div class="q" style="text-align:left;margin:10px 0"><b>☁️ Sauvegarde sur le serveur</b><br><small style="color:var(--mut)">Ta progression est enregistrée automatiquement. Ton code secret : <b id="cd" style="font-size:1.1rem;color:var(--ink)">${CODE}</b><br>Note-le : il permet de retrouver ta progression sur un autre appareil.</small><div class="nav" style="justify-content:flex-start"><button class="alt" onclick="navigator.clipboard&&navigator.clipboard.writeText(CODE);toast('Code copié')">📋 Copier</button><button class="alt" onclick="setCode()">🔑 Utiliser un autre code</button></div></div><div class="tabs"><button class="alt" onclick="resetAll()">🔄 Tout réinitialiser</button></div><h3>Ton parcours (dans l'ordre conseillé)</h3>
+  <div class="q" style="text-align:left;margin:10px 0"><b>👤 Profil</b><br><small style="color:var(--mut)">${PNAME?"Connecté : <b style=\"color:var(--ink)\">"+PNAME.replace(/</g,"&lt;")+"</b>. Ta progression est enregistrée sur le serveur et retrouvée sur tous tes appareils.":"Pas de profil : ta progression n'est liée qu'à ce navigateur. Crée un profil (nom + mot de passe) pour la retrouver partout."}</small><div class="nav" style="justify-content:flex-start"><button class="alt" onclick="profOpen()">${PNAME?"🔁 Changer de profil":"👤 Créer / se connecter"}</button>${PNAME?'<button class="alt" onclick="profOut()">🚪 Se déconnecter</button>':""}</div></div><div class="tabs"><button class="alt" onclick="resetAll()">🔄 Tout réinitialiser</button></div><h3>Ton parcours (dans l'ordre conseillé)</h3>
   ${rows.map(({c,m,rem})=>{const [l,col]=lvl(m);return `<div class="row" onclick="openAny('${c.id}')"><div class="rv">${c.icon}</div><div class="rt"><b style="font-size:.95rem">${isPrio(c.id)?"⭐ ":""}${c.name}</b><div class="bar" style="height:5px"><i style="width:${m}%;background:${col}"></i></div></div><div style="text-align:right;font-size:.75rem"><b style="color:${col}">${l}</b><br>${Math.round(m)} % · ${rem>=.5?"~"+Math.ceil(rem)+" restants":"✔"}</div></div>`}).join("")}`}
 function resetUnit(id){const c=unit(id);if(!confirm("Réinitialiser « "+c.name+" » ? Ta progression de ce chapitre sera effacée."))return;
   if(c.mod){const v=S.mod=S.mod||{},m=id.slice(2);if(m==="pinyin"){v.pv=[];v.pq=0}else if(m==="gram")v.g={};else if(m==="gram2")v.g2={};else if(m==="gram3")v.g3={};else S.cs=[]}
