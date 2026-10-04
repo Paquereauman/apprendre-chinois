@@ -167,6 +167,7 @@ nav#bn button:hover{background:#fff3d6}
 .eta.ok{background:#e3f6ea;border-color:#b7e4c7}
 .cat.next{background:#fff;background:color-mix(in srgb,var(--c) 13%,#fff);color:var(--ink);border-left-color:var(--c)}.cat.next small{color:var(--mut)}.cat.next .ic{color:var(--c)}
 .lvs button.on{background:var(--red);color:#fff}
+.dash{gap:10px;padding:8px 12px;margin-bottom:6px}.ring{width:50px;height:50px}.ring span{width:38px;height:38px;font-size:.8rem}.avb svg{width:50px;height:50px}.dtx small{margin-top:2px;font-size:.76rem}.goal{margin:3px 0 0;font-size:.78rem}.dtx .bar{margin-top:2px}.eta{padding:6px 12px;margin:0 0 6px;line-height:1.25;font-size:.9rem}.eta small{font-size:.7rem}
 @media(max-width:600px){select,input[type=text],input:not([type]){min-height:42px;font-size:16px}button{min-height:38px}#tip{max-width:calc(100vw - 16px)}}
 .q+.tiles{margin-top:16px}
 .pc small{display:block;margin:4px 0 2px;line-height:1.45}
@@ -548,22 +549,33 @@ function eta(st){const u=S.unit||"day",v=S.pace||5,wpd=u==="week"?v/7:v;if(st.re
   return {d,dur:d>=14?"~"+Math.ceil(d/7)+" semaines":"~"+d+" jour"+(d>1?"s":""),date:new Date(Date.now()+d*864e5).toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"}),rate:v+" mots "+(u==="week"?"par semaine":"par jour")}}
 
 /* ---------- avatar personnalisable (SVG) ---------- */
-const AV_OPT={skin:["#fde0c8","#f5c9a0","#e0a577","#c68642","#8d5524","#5c3a1e"],hair:["#2b1d14","#5a3825","#a0642f","#d9a441","#e8d9a8","#b83a2e","#8e8e96","#3a5fcd","#c2479b"],
+const AV_OPT={skin:["#fde0c8","#f5c9a0","#e0a577","#c68642","#8d5524","#5c3a1e","#ffd93d"],hair:["#2b1d14","#5a3825","#a0642f","#d9a441","#e8d9a8","#b83a2e","#8e8e96","#3a5fcd","#c2479b"],
  bg:["#ffe3e0","#ffefc2","#d8f3dc","#d6e8ff","#e6dcff","#e9e9e9"],clo:["#e63946","#f4a300","#2bb673","#457b9d","#7b4fd1","#2b2b33"]};
-const AV_N={style:8,eyes:4,brows:3,nose:3,mouth:4,glasses:4,beard:4};
+const AV_N={style:19,eyes:4,brows:3,nose:3,mouth:4,glasses:4,beard:4};
 const AV_DEF={skin:1,hair:0,style:1,eyes:1,brows:0,nose:0,mouth:0,glasses:0,beard:0,bg:1,clo:0};
 const AV_LAB={style:"Coupe",hair:"Cheveux",skin:"Peau",eyes:"Yeux",brows:"Sourcils",nose:"Nez",mouth:"Bouche",glasses:"Lunettes",beard:"Barbe",clo:"Haut",bg:"Fond"};
-const AV_NAMES={style:["Chauve","Courte","Longue","Chignon","Bouclée","Crête","Carré","Frange"],eyes:["Points","Ronds","Contents","Endormis"],brows:["Droits","Arqués","Épais"],nose:["Petit","Rond","Pointu","Aucun"],mouth:["Sourire","Grand sourire","Neutre","En coin"],glasses:["Aucune","Rondes","Carrées","Soleil"],beard:["Aucune","Barbe de 3 jours","Bouc","Barbe pleine"]};
+const AV_NAMES={style:["Chauve","Courte","Longue","Chignon","Bouclée","Crête","Carré","Frange","Afro","Queue de cheval","Couettes","Rasée","Pics","Raie sur le côté","Au bol","Gominée","Tresse","Mi-long ondulé","Dégarni"],eyes:["Points","Ronds","Contents","Endormis"],brows:["Droits","Arqués","Épais"],nose:["Petit","Rond","Pointu","Aucun"],mouth:["Sourire","Grand sourire","Neutre","En coin"],glasses:["Aucune","Rondes","Carrées","Soleil"],beard:["Aucune","Barbe de 3 jours","Bouc","Barbe pleine"]};
 function avSVG(a,px){a=Object.assign({},AV_DEF,a||{});const sk=AV_OPT.skin[a.skin],hc=AV_OPT.hair[a.hair],dk="#2b1d14",sh="rgba(0,0,0,.14)";let back="",front="";
-  const fringe=`<path d="M25 46C24 16 76 16 75 46C70 33 60 29 50 29C40 29 30 33 25 46Z" fill="${hc}"/>`;
+  const H=`fill="${hc}"`,cap=`<path d="M22 52C14 -2 86 -2 78 52C74 38 64 30 50 30C36 30 26 38 22 52Z" ${H}/>`,fringe=`<path d="M23 52C16 0 84 0 77 52C73 38 63 31 50 31C37 31 27 38 23 52Z" ${H}/>`;
   switch(a.style){
     case 1:front=fringe;break;
-    case 2:back=`<path d="M21 50C18 12 82 12 79 50L82 92L18 92Z" fill="${hc}"/>`;front=fringe;break;
-    case 3:back=`<circle cx="50" cy="12" r="10" fill="${hc}"/>`;front=fringe;break;
-    case 4:front=[28,38,50,62,72].map((x,i)=>`<circle cx="${x}" cy="${i%2?24:28}" r="11" fill="${hc}"/>`).join("")+`<circle cx="24" cy="40" r="8" fill="${hc}"/><circle cx="76" cy="40" r="8" fill="${hc}"/>`;break;
-    case 5:front=`<path d="M43 30L47 4L53 4L57 30Z" fill="${hc}"/>`;break;
-    case 6:back=`<path d="M21 52C18 12 82 12 79 52L79 68L21 68Z" fill="${hc}"/>`;front=fringe;break;
-    case 7:front=`<path d="M25 46C24 16 76 16 75 46C66 40 58 34 40 36C34 38 28 42 25 46Z" fill="${hc}"/>`;break}
+    case 2:back=`<path d="M19 52C14 8 86 8 81 52L84 94L16 94Z" ${H}/>`;front=cap;break;
+    case 3:back=`<circle cx="50" cy="8" r="11" ${H}/>`;front=cap;break;
+    case 4:back=`<circle cx="24" cy="44" r="9" ${H}/><circle cx="76" cy="44" r="9" ${H}/>`;front=[24,36,50,64,76].map((x,i)=>`<circle cx="${x}" cy="${i%2?22:27}" r="13" ${H}/>`).join("")+`<circle cx="22" cy="40" r="8" ${H}/><circle cx="78" cy="40" r="8" ${H}/><path d="M24 44C28 36 38 34 50 34C62 34 72 36 76 44L76 30L24 30Z" ${H}/>`;break;
+    case 5:front=`<path d="M25 44C24 34 28 30 31 30L31 40Z M75 44C76 34 72 30 69 30L69 40Z" ${H} opacity=".5"/><path d="M42 30L45 2L55 2L58 30Z" ${H}/>`;break;
+    case 6:back=`<path d="M19 54C14 8 86 8 81 54L81 70C70 76 30 76 19 70Z" ${H}/>`;front=cap;break;
+    case 7:front=`<path d="M22 52C14 -2 86 -2 78 52C70 44 60 36 40 38C32 40 26 44 22 52Z" ${H}/>`;break;
+    case 8:back=`<circle cx="50" cy="30" r="36" ${H}/>`;front=cap;break;
+    case 9:back=`<path d="M68 22C96 16 100 58 86 76C90 54 82 42 66 38Z" ${H}/>`;front=cap+`<circle cx="76" cy="30" r="3.5" fill="#e63946"/>`;break;
+    case 10:back=`<circle cx="12" cy="46" r="11" ${H}/><circle cx="88" cy="46" r="11" ${H}/>`;front=cap+`<rect x="19" y="36" width="8" height="5" rx="2" fill="#e63946"/><rect x="73" y="36" width="8" height="5" rx="2" fill="#e63946"/>`;break;
+    case 11:front=`<path d="M26 46C24 16 76 16 74 46C70 30 60 26 50 26C40 26 30 30 26 46Z" ${H} opacity=".55"/>`;break;
+    case 12:front=`<path d="M23 44L20 12L35 26L41 2L50 24L59 2L65 26L80 12L77 44C71 32 61 28 50 28C39 28 29 32 23 44Z" ${H}/>`;break;
+    case 13:front=`<path d="M22 52C14 -2 86 -2 78 52C75 40 68 32 58 28C50 40 34 42 22 52Z" ${H}/><path d="M58 28C60 18 62 10 66 6" fill="none" stroke="${sh}" stroke-width="2"/>`;break;
+    case 14:front=`<path d="M21 54C14 -2 86 -2 79 54L77 41Q50 33 23 41Z" ${H}/>`;break;
+    case 15:front=`<path d="M24 50C18 2 82 2 76 50C72 34 62 26 50 26C38 26 28 34 24 50Z" ${H}/><path d="M34 22Q50 10 66 22M30 30Q50 16 70 30" fill="none" stroke="#fff" stroke-width="1.6" opacity=".35"/>`;break;
+    case 16:back=`<g ${H}><circle cx="76" cy="76" r="5.5"/><circle cx="78" cy="85" r="5.5"/><circle cx="76" cy="94" r="5.5"/></g>`;front=cap;break;
+    case 17:back=`<path d="M19 52C14 8 86 8 81 52L88 82C82 78 80 88 74 82C70 88 64 80 60 84L40 84C36 80 30 88 26 82C20 88 18 78 12 82Z" ${H}/>`;front=cap;break;
+    case 18:front=`<path d="M25 52C21 38 26 30 33 32C30 40 31 48 30 56Z M75 52C79 38 74 30 67 32C70 40 69 48 70 56Z" ${H}/><path d="M44 23Q50 17 56 23" fill="none" stroke="${hc}" stroke-width="2.4" stroke-linecap="round"/>`;break}
   const eye=[`<circle cx="38" cy="49" r="2.8" fill="${dk}"/><circle cx="62" cy="49" r="2.8" fill="${dk}"/>`,
     `<ellipse cx="38" cy="49" rx="4.6" ry="3.6" fill="#fff"/><ellipse cx="62" cy="49" rx="4.6" ry="3.6" fill="#fff"/><circle cx="38" cy="49" r="2.3" fill="${dk}"/><circle cx="62" cy="49" r="2.3" fill="${dk}"/>`,
     `<path d="M33 50Q38 43 43 50M57 50Q62 43 67 50" fill="none" stroke="${dk}" stroke-width="2.6" stroke-linecap="round"/>`,
