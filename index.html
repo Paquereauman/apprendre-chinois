@@ -171,6 +171,34 @@ nav#bn button:hover{background:#fff3d6}
 .top2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:8px;margin-bottom:8px}.top2>*{margin:0!important}.top2 .cat.next{display:flex;align-items:center;gap:10px;padding:8px 12px;min-height:0}.top2 .cat.next .ic{font-size:1.3rem;margin:0}.top2 .cat.next small{display:block}
 .sec>h2{margin:.5em 0 .3em}
 @media(min-width:900px){.sec{display:grid;grid-template-columns:150px minmax(0,1fr);gap:10px;align-items:start}.sec>h2{margin:.4em 0;font-size:1rem;position:sticky;top:60px}.sec>.grid{gap:8px}}
+.hm{max-width:1040px;margin:0 auto;display:flex;flex-direction:column;gap:18px;font-size:16px}.hm *{box-sizing:border-box}
+.hm-seg-wrap{display:flex;background:#f1e8dc;border-radius:12px;padding:4px;gap:4px;max-width:440px}
+.hm-seg{flex:1;text-align:center;padding:7px 6px;border-radius:9px;font-weight:600;font-size:.88rem;cursor:pointer;color:var(--mut);user-select:none;white-space:nowrap}
+.hm-seg.on{background:#fff;color:var(--red);box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.hm-sync{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;background:#fff;border:1px solid #eee;border-radius:14px;padding:10px 14px;font-size:.92rem}
+.hm-row{display:flex;gap:8px;flex-wrap:wrap}
+.hm-btn{display:inline-flex;align-items:center;justify-content:center;padding:8px 14px;border-radius:10px;font-weight:600;font-size:.88rem;cursor:pointer;background:var(--red);color:#fff;user-select:none}.hm-btn.alt{background:#f1e8dc;color:var(--ink)}
+.hm-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.hm-card{background:#fff;border:1px solid #eee;border-radius:14px;padding:12px 14px}
+.hm-lab{font-size:.72rem;color:var(--mut);text-transform:uppercase;letter-spacing:.05em;font-weight:700}
+.hm-val{font-size:1.3rem;font-weight:800;line-height:1.2;margin:2px 0 8px}.hm-val small{font-size:.8rem;font-weight:600;color:var(--mut)}
+.hm-bar{height:4px;background:#eee;border-radius:4px;overflow:hidden}.hm-bar i{display:block;height:100%;background:var(--ok);border-radius:4px;transition:width .6s}
+.hm-me{display:flex;align-items:center;gap:12px}.hm-me .avb svg{width:48px;height:48px}
+.hm-sub{font-size:.78rem;color:var(--mut);margin-top:8px;line-height:1.35}
+.hm-acts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}.hm-acts:empty{display:none}
+.hm-act{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:14px;background:#fff;border:1px solid #eee;cursor:pointer;font-weight:700;font-size:.95rem;min-height:54px;line-height:1.2}
+.hm-act small{display:block;font-weight:500;font-size:.78rem;color:var(--mut);margin-top:2px}
+.hm-act.main{background:var(--red);border-color:var(--red);color:#fff}.hm-act.main small{color:#ffe3e0}
+.hm-act.ok{cursor:default;background:#f3faf5;color:var(--mut)}
+.hm-sec h2{display:flex;align-items:center;gap:8px;font-size:1.02rem;margin:0 0 8px;font-weight:700}.hm-sec h2 small{margin-left:auto;font-size:.78rem;color:var(--mut);font-weight:600}
+.hm-n{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--red);color:#fff;font-size:.78rem}
+.hm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.hm-t{display:grid;grid-template-columns:34px minmax(0,1fr);column-gap:10px;align-items:center;background:#fff;border:1px solid #eee;border-left:4px solid var(--c);border-radius:12px;padding:10px 12px;cursor:pointer;min-height:58px;transition:box-shadow .15s}
+.hm-t:hover{box-shadow:0 2px 8px rgba(0,0,0,.12)}.hm-t .ic{font-size:1.55rem;text-align:center;line-height:1}
+.hm-t b{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;font-size:.9rem;font-weight:600;line-height:1.2;overflow:hidden}
+.hm-t .meta{display:flex;align-items:center;gap:8px;margin-top:7px}.hm-t .meta .hm-bar{flex:1}.hm-t .meta span{font-size:.72rem;color:var(--mut);min-width:28px;text-align:right}
+.hm-t.done .meta span{color:var(--ok);font-weight:800}
+@media(max-width:700px){.hm{gap:14px}.hm-stats{grid-template-columns:1fr 1fr}.hm-me-card{grid-column:1/-1}.hm-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.hm-t{grid-template-columns:26px minmax(0,1fr);column-gap:8px;padding:8px 10px}.hm-t .ic{font-size:1.25rem}.hm-t b{font-size:.84rem}.hm-acts{grid-template-columns:1fr}}
 @media(max-width:600px){.top2 .cat.next small{display:none}}
 @media(max-width:600px){select,input[type=text],input:not([type]){min-height:42px;font-size:16px}button{min-height:38px}#tip{max-width:calc(100vw - 16px)}}
 .q+.tiles{margin-top:16px}
@@ -703,9 +731,23 @@ function openAny(id){if(id.startsWith("m:"))window[MODS[id.slice(2)].fn]();else 
 function nextUnit(){return prioUnits().find(u=>mastery(u)<60)||ALL().find(u=>mastery(u)<60)}
 function stepCard(id){const c=unit(id),m=mastery(c);
   return `<div class="cat" style="--c:${c.color}" onclick="openAny('${id}')"><div class="ic">${c.icon}</div><b>${isPrio(id)?"⭐ ":""}${c.name}</b><small>${m>=85?"✅ Acquis":Math.round(m)+" %"}</small><div class="bar"><i style="width:${m}%"></i></div></div>`}
-function home(){cur=home;cat=null;head();const nx=nextUnit();
-  $.innerHTML=`<div class="lvs">${["A1","A2","B1"].map(l=>`<button class="${LV()===l?"on":"alt"}" onclick="setLvl('${l}')">${LVLAB[l]}</button>`).join("")}</div>`+syncBanner()+`<div class="top2">${dash()}</div>`+prioSection()+`<div class="top2">${prioCard()}${revCard()}`+(nx?`<div class="cat next" style="--c:${nx.color}" onclick="openAny('${nx.id}')"><div class="ic">▶</div><b>Prochaine étape : ${nx.icon} ${nx.name}</b><small>Touche pour continuer ton parcours ${LV()}</small></div>`:`<div class="q">🎉 Parcours ${LV()} terminé !${NEXTLV[LV()]?`<div class="nav"><button onclick="setLvl('${NEXTLV[LV()]}')">${LVLAB[NEXTLV[LV()]]} ▶</button></div>`:""}</div>`)+"</div>"+
-  steps().map(([t,ids],n)=>`<section class="sec"><h2><span class="num">${n+1}</span>${t} <small class="stp">${ids.filter(i=>mastery(unit(i))>=85).length}/${ids.length} ✅</small></h2><div class="grid">${ids.map(stepCard).join("")}</div></section>`).join("")}
+const hmBar=p=>`<div class="hm-bar"><i style="width:${Math.max(0,Math.min(100,p))}%"></i></div>`;
+function hmTile(id){const c=unit(id),m=mastery(c),ok=m>=85;
+  return `<div class="hm-t${ok?" done":""}" style="--c:${c.color}" onclick="openAny('${id}')"><div class="ic">${c.icon}</div><div class="hm-tx"><b title="${c.name.replace(/"/g,"&quot;")}">${isPrio(id)?"⭐ ":""}${c.name}</b><div class="meta">${hmBar(m)}<span>${ok?"✓":Math.round(m)+"%"}</span></div></div></div>`}
+function hmSync(){if(PNAME||S.dismissSync||S.xp||wordsIn(S))return "";
+  return `<div class="hm-sync"><div style="flex:1 1 240px"><b>👤 Sauvegarde ta progression</b><div class="hm-sub" style="margin:0">Connecte-toi pour la retrouver sur tous tes appareils.</div></div><div class="hm-row"><div role="button" class="hm-btn" onclick="profOpen()">Se connecter / créer un compte</div><div role="button" class="hm-btn alt" onclick="S.dismissSync=1;save();home()">Plus tard</div></div></div>`}
+function home(){cur=home;cat=null;head();const nx=nextUnit(),st=stats(),E=eta(st),L=lvOf(S.xp),lo=40*(L-1)**2,hi=40*L*L,dn=(S.day&&S.day.d===tdy())?S.day.n:0,gd=goalDay(),due=dueItems().length,pu=prioUnits();
+  const todo=pu.filter(u=>!u.mod).reduce((n,c)=>n+c.items.filter(it=>!(S.known[c.id]||[]).some(x=>nk(x)===nk(it[0]))).length,0);
+  const acts=[nx?`<div class="hm-act main" onclick="openAny('${nx.id}')"><span style="font-size:1.4rem">▶</span><div>Continuer<small>${nx.icon} ${nx.name}</small></div></div>`:`<div class="hm-act ok">🎉 Parcours ${LV()} terminé !</div>`,
+    due?`<div class="hm-act" onclick="revStart()"><span style="font-size:1.4rem">🔁</span><div>Révision du jour<small>${due} mot${due>1?"s":""} à revoir</small></div></div>`:(Object.keys(S.rev||{}).length?`<div class="hm-act ok"><span style="font-size:1.4rem">✅</span><div>Révisions à jour<small>Rien à revoir aujourd'hui</small></div></div>`:""),
+    pu.length?`<div class="hm-act" onclick="prioStart()"><span style="font-size:1.4rem">⭐</span><div>Réviser mes priorités<small>${todo} mot${todo>1?"s":""} à travailler</small></div></div>`:""].join("");
+  $.innerHTML=`<div class="hm"><div class="hm-seg-wrap">${["A1","A2","B1"].map(l=>`<div role="button" class="hm-seg${LV()===l?" on":""}" onclick="setLvl('${l}')">${LVLAB[l]}</div>`).join("")}</div>`+hmSync()+
+  `<div class="hm-stats"><div class="hm-card hm-me-card"><div class="hm-me"><button type="button" class="avb" onclick="avOpen()" aria-label="Modifier mon avatar" title="Modifier mon avatar">${avSVG(S.av,48)}<i>✏️</i></button><div style="flex:1;min-width:0"><div class="hm-val" style="margin:0 0 8px">Niveau ${L} <small>· ⭐ ${S.xp} XP</small></div>${hmBar((S.xp-lo)/(hi-lo)*100)}</div></div></div>`+
+  `<div class="hm-card"><div class="hm-lab">Aujourd'hui</div><div class="hm-val">${dn}<small> / ${gd} mots</small></div>${hmBar(dn/gd*100)}<div class="hm-sub">🔥 ${S.streak} jour${S.streak>1?"s":""} de suite</div></div>`+
+  `<div class="hm-card" onclick="plan()" style="cursor:pointer"><div class="hm-lab">Parcours ${LV()}</div><div class="hm-val">${Math.round(st.all)} %<small> · ${Math.round(st.tot-st.rem)}/${st.tot} mots</small></div>${hmBar(st.all)}<div class="hm-sub">${E?`⏳ ${E.dur} · ${E.date}`:`${st.done}/${st.n} chapitres`}</div></div></div>`+
+  `<div class="hm-acts">${acts}</div>`+
+  (pu.length?`<section class="hm-sec"><h2>⭐ À travailler en premier</h2><div class="hm-grid">${pu.map(u=>hmTile(u.id)).join("")}</div></section>`:"")+
+  steps().map(([t,ids],n)=>`<section class="hm-sec"><h2><span class="hm-n">${n+1}</span>${t}<small>${ids.filter(i=>mastery(unit(i))>=85).length}/${ids.length}</small></h2><div class="hm-grid">${ids.map(hmTile).join("")}</div></section>`).join("")+`</div>`}
 
 // ---- Pinyin & tons
 const TONES=[["1","mā","妈","maman","<b>Aigu et plat</b> : tu restes en haut, voix constante (comme tenir une note aiguë)."],["2","má","麻","chanvre","<b>Montant</b> : de moyen vers aigu, comme une question surprise « Quoi ? »."],["3","mǎ","马","cheval","<b>Grave</b> : tu descends en bas (voix grave), puis tu remontes un peu."],["4","mà","骂","gronder","<b>Descendant</b> : tu pars de l'aigu et tu tombes d'un coup vers le grave, comme un ordre sec « Non ! »."],["0","ma","吗","(question)","<b>Neutre</b> : léger, court, sans mélodie propre."]];
