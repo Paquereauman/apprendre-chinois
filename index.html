@@ -168,6 +168,11 @@ nav#bn button:hover{background:#fff3d6}
 .cat.next{background:#fff;background:color-mix(in srgb,var(--c) 13%,#fff);color:var(--ink);border-left-color:var(--c)}.cat.next small{color:var(--mut)}.cat.next .ic{color:var(--c)}
 .lvs button.on{background:var(--red);color:#fff}
 @media(max-width:600px){select,input[type=text],input:not([type]){min-height:42px;font-size:16px}button{min-height:38px}#tip{max-width:calc(100vw - 16px)}}
+.q+.tiles{margin-top:16px}
+.pc small{display:block;margin:4px 0 2px;line-height:1.45}
+.pc .nav{margin-top:10px;gap:8px}
+.pc .nav button{padding:8px 14px;font-size:.95rem}
+.tabs{margin:14px 0 18px}
 </style>
 </head>
 <body>
@@ -1303,7 +1308,7 @@ function plan(){cur=plan;head();
   <div class="tiles"><div class="tile" onclick="testStart(1)"><span>⚡</span><b>Test rapide</b><small>${levelCats().length*2+6} questions · 1 mot par thème, testé 2 fois${S.testDate?" · dernier : "+S.testDate:""}</small></div>
   <div class="tile" onclick="testStart(2)"><span>📝</span><b>Test complet</b><small>${levelCats().length*4+6} questions · 2 mots par thème, plus fiable</small></div></div>
   <p style="color:var(--mut);font-size:.85rem">Un mot n'est « connu » qu'après 2 réussites dans 2 types de questions différents (dictée, pinyin, courbe de ton…). Le test comprend aussi des phrases à trous et à remettre en ordre.</p>
-  <div class="q" style="text-align:left;margin:10px 0"><b>👤 Profil</b><br><small style="color:var(--mut)">${PNAME?"Connecté : <b style=\"color:var(--ink)\">"+PNAME.replace(/</g,"&lt;")+"</b>. Ta progression est enregistrée sur le serveur et retrouvée sur tous tes appareils.":"Pas de profil : ta progression n'est liée qu'à ce navigateur. Crée un profil (nom + mot de passe) pour la retrouver partout."}</small><div class="nav" style="justify-content:flex-start"><button class="alt" onclick="profOpen()">${PNAME?"🔁 Changer de profil":"👤 Créer / se connecter"}</button>${PNAME?'<button class="alt" onclick="profOut()">🚪 Se déconnecter</button>':""}</div></div><div class="tabs"><button class="alt" onclick="resetAll()">🔄 Tout réinitialiser</button></div><h3>Ton parcours (dans l'ordre conseillé)</h3>
+  <div class="q pc" style="text-align:left;margin:14px 0"><b>👤 Profil</b><br><small style="color:var(--mut)">${PNAME?"Connecté : <b style=\"color:var(--ink)\">"+PNAME.replace(/</g,"&lt;")+"</b>. Ta progression est enregistrée sur le serveur et retrouvée sur tous tes appareils.":"Pas de profil : ta progression n'est liée qu'à ce navigateur. Crée un profil (nom + mot de passe) pour la retrouver partout."}</small><div class="nav" style="justify-content:flex-start"><button class="alt" onclick="profOpen()">${PNAME?"🔁 Changer de profil":"👤 Créer / se connecter"}</button>${PNAME?'<button class="alt" onclick="profOut()">🚪 Se déconnecter</button>':""}</div></div><div class="tabs"><button class="alt" onclick="resetAll()">🔄 Tout réinitialiser</button></div><h3>Ton parcours (dans l'ordre conseillé)</h3>
   ${rows.map(({c,m,rem})=>{const [l,col]=lvl(m);return `<div class="row" onclick="openAny('${c.id}')"><div class="rv">${c.icon}</div><div class="rt"><b style="font-size:.95rem">${isPrio(c.id)?"⭐ ":""}${c.name}</b><div class="bar" style="height:5px"><i style="width:${m}%;background:${col}"></i></div></div><div style="text-align:right;font-size:.75rem"><b style="color:${col}">${l}</b><br>${Math.round(m)} % · ${rem>=.5?"~"+Math.ceil(rem)+" restants":"✔"}</div></div>`}).join("")}`}
 function resetUnit(id){const c=unit(id);if(!confirm("Réinitialiser « "+c.name+" » ? Ta progression de ce chapitre sera effacée."))return;
   if(c.mod){const v=S.mod=S.mod||{},m=id.slice(2);if(m==="pinyin"){v.pv=[];v.pq=0}else if(m==="gram")v.g={};else if(m==="gram2")v.g2={};else if(m==="gram3")v.g3={};else S.cs=[]}
