@@ -180,6 +180,7 @@ nav#bn button:hover{background:#fff3d6}
   <h1 id="ttl" onclick="home()">🐼 你好! Chinois A1</h1>
   <span class="pill" id="streak"></span>
   <span class="pill" id="xp"></span>
+  <span class="pill" id="prf" onclick="profOpen()" title="Profil"></span>
   <span class="pill" onclick="openSet()" title="Réglages">⚙️</span>
 <div id="hp"><i></i></div></header>
 <div id="crumb"></div>
@@ -508,7 +509,7 @@ const setCode=profOpen;
 const $=document.getElementById("app");
 const today=()=>new Date().toISOString().slice(0,10);
 function touchStreak(){const t=today();if(S.last===t)return;const y=new Date(Date.now()-864e5).toISOString().slice(0,10);S.streak=S.last===y?S.streak+1:1;S.last=t;save()}
-function head(){try{document.getElementById("ttl").textContent="🐼 你好! Chinois "+LV()}catch(e){}try{document.querySelector("#hp i").style.width=stats().all+"%"}catch(e){}document.getElementById("voi").textContent=voiceLabel();document.getElementById("spd").textContent="🔊 "+["très lent","lent","normal"][S.sp??1];document.getElementById("xp").textContent="⭐ "+S.xp+" XP";document.getElementById("streak").textContent="🔥 "+S.streak;document.getElementById("pyT").textContent="拼音 "+(S.py?"ON":"OFF")}
+function head(){try{const pf=document.getElementById("prf");pf.textContent=PNAME?"👤 "+PNAME.slice(0,12):"👤 Connexion";pf.style.background=PNAME?"rgba(255,255,255,.2)":"#fff";pf.style.color=PNAME?"":"#e63946"}catch(e){}try{document.getElementById("ttl").textContent="🐼 你好! Chinois "+LV()}catch(e){}try{document.querySelector("#hp i").style.width=stats().all+"%"}catch(e){}document.getElementById("voi").textContent=voiceLabel();document.getElementById("spd").textContent="🔊 "+["très lent","lent","normal"][S.sp??1];document.getElementById("xp").textContent="⭐ "+S.xp+" XP";document.getElementById("streak").textContent="🔥 "+S.streak;document.getElementById("pyT").textContent="拼音 "+(S.py?"ON":"OFF")}
 function openSet(){head();cloudInfo();document.getElementById('setp').classList.add('on')}
 function closeSet(){document.getElementById('setp').classList.remove('on')}
 function togglePy(){S.py=!S.py;save();head();if(cur)cur()}
