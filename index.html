@@ -168,6 +168,10 @@ nav#bn button:hover{background:#fff3d6}
 .cat.next{background:#fff;background:color-mix(in srgb,var(--c) 13%,#fff);color:var(--ink);border-left-color:var(--c)}.cat.next small{color:var(--mut)}.cat.next .ic{color:var(--c)}
 .lvs button.on{background:var(--red);color:#fff}
 .dash{gap:10px;padding:8px 12px;margin-bottom:6px}.ring{width:50px;height:50px}.ring span{width:38px;height:38px;font-size:.8rem}.avb svg{width:50px;height:50px}.dtx small{margin-top:2px;font-size:.76rem}.goal{margin:3px 0 0;font-size:.78rem}.dtx .bar{margin-top:2px}.eta{padding:6px 12px;margin:0 0 6px;line-height:1.25;font-size:.9rem}.eta small{font-size:.7rem}
+.top2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:8px;margin-bottom:8px}.top2>*{margin:0!important}.top2 .cat.next{display:flex;align-items:center;gap:10px;padding:8px 12px;min-height:0}.top2 .cat.next .ic{font-size:1.3rem;margin:0}.top2 .cat.next small{display:block}
+.sec>h2{margin:.5em 0 .3em}
+@media(min-width:900px){.sec{display:grid;grid-template-columns:150px minmax(0,1fr);gap:10px;align-items:start}.sec>h2{margin:.4em 0;font-size:1rem;position:sticky;top:60px}.sec>.grid{gap:8px}}
+@media(max-width:600px){.top2 .cat.next small{display:none}}
 @media(max-width:600px){select,input[type=text],input:not([type]){min-height:42px;font-size:16px}button{min-height:38px}#tip{max-width:calc(100vw - 16px)}}
 .q+.tiles{margin-top:16px}
 .pc small{display:block;margin:4px 0 2px;line-height:1.45}
@@ -688,9 +692,11 @@ function prioStart(){const us=prioUnits().filter(u=>!u.mod),kn=(c,it)=>(S.known[
   cat=null;cur=null;Q={qs:shuffle(sel).map(({it,c})=>mkQ(it,c.items,pickT(it),c)),i:0,s:0,mode:"rev",nw:0};qShow()}
 function prioSection(){const pu=prioUnits();if(!pu.length)return "";
   const todo=pu.filter(u=>!u.mod).reduce((n,c)=>n+c.items.filter(it=>!(S.known[c.id]||[]).some(x=>nk(x)===nk(it[0]))).length,0);
-  return `<h2>⭐ Mes priorités <small class="stp">à travailler en premier</small></h2><div class="grid">${pu.map(u=>stepCard(u.id)).join("")}</div>
-  <div class="cat next" style="--c:#f4a300;margin-top:8px" onclick="prioStart()"><div class="ic">▶</div><b>Réviser mes priorités</b><small>${todo} mot${todo>1?"s":""} à travailler · quiz de 15 questions, mots non connus d'abord</small></div>`}
-function syncBanner(){if(S.xp||wordsIn(S)||S.dismissSync)return "";return `<div class="q" style="text-align:left;margin-bottom:10px"><b>👤 Tu as déjà un profil ?</b><br><small style="color:var(--mut)">Connecte-toi avec ton nom et ton mot de passe pour retrouver ta progression, ou crée ton profil pour la garder sur tous tes appareils.</small><div class="nav" style="justify-content:flex-start"><button onclick="profOpen()">👤 Me connecter / créer un profil</button><button class="alt" onclick="S.dismissSync=1;save();home()">Non, c'est nouveau</button></div></div>`}
+  return `<section class="sec"><h2>⭐ Mes priorités <small class="stp">à travailler en premier</small></h2><div class="grid">${pu.map(u=>stepCard(u.id)).join("")}</div></section>`}
+function prioCard(){const pu=prioUnits();if(!pu.length)return "";
+  const todo=pu.filter(u=>!u.mod).reduce((n,c)=>n+c.items.filter(it=>!(S.known[c.id]||[]).some(x=>nk(x)===nk(it[0]))).length,0);
+  return `<div class="cat next" style="--c:#f4a300" onclick="prioStart()"><div class="ic">▶</div><b>Réviser mes priorités</b><small>${todo} mot${todo>1?"s":""} à travailler · quiz de 15 questions</small></div>`}
+function syncBanner(){if(S.xp||wordsIn(S)||S.dismissSync)return "";return `<div class="q" style="text-align:left;margin-bottom:8px;padding:8px 12px;display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px"><div style="flex:1 1 280px"><b>👤 Tu as déjà un profil ?</b><br><small style="color:var(--mut)">Connecte-toi pour retrouver ta progression, ou crée un compte.</small></div><div class="nav" style="margin:0;justify-content:flex-start"><button onclick="profOpen()">👤 Me connecter / créer un profil</button><button class="alt" onclick="S.dismissSync=1;save();home()">Non, c'est nouveau</button></div></div>`}
 function revCard(){const n=dueItems().length;if(n)return `<div class="cat next" style="--c:#2bb673" onclick="revStart()"><div class="ic">🔁</div><b>Révision du jour : ${n} mot${n>1?"s":""}</b><small>Révise avant d'oublier (répétition espacée)</small></div>`;
   return Object.keys(S.rev||{}).length?`<div class="eta ok" style="cursor:default">✅ Aucune révision à faire aujourd'hui</div>`:""}
 function openAny(id){if(id.startsWith("m:"))window[MODS[id.slice(2)].fn]();else openCat(id)}
@@ -698,8 +704,8 @@ function nextUnit(){return prioUnits().find(u=>mastery(u)<60)||ALL().find(u=>mas
 function stepCard(id){const c=unit(id),m=mastery(c);
   return `<div class="cat" style="--c:${c.color}" onclick="openAny('${id}')"><div class="ic">${c.icon}</div><b>${isPrio(id)?"⭐ ":""}${c.name}</b><small>${m>=85?"✅ Acquis":Math.round(m)+" %"}</small><div class="bar"><i style="width:${m}%"></i></div></div>`}
 function home(){cur=home;cat=null;head();const nx=nextUnit();
-  $.innerHTML=`<div class="lvs">${["A1","A2","B1"].map(l=>`<button class="${LV()===l?"on":"alt"}" onclick="setLvl('${l}')">${LVLAB[l]}</button>`).join("")}</div>`+syncBanner()+dash()+revCard()+prioSection()+(nx?`<div class="cat next" style="--c:${nx.color}" onclick="openAny('${nx.id}')"><div class="ic">▶</div><b>Prochaine étape : ${nx.icon} ${nx.name}</b><small>Touche pour continuer ton parcours ${LV()}</small></div>`:`<div class="q">🎉 Parcours ${LV()} terminé !${NEXTLV[LV()]?`<div class="nav"><button onclick="setLvl('${NEXTLV[LV()]}')">${LVLAB[NEXTLV[LV()]]} ▶</button></div>`:""}</div>`)+
-  steps().map(([t,ids],n)=>`<h2><span class="num">${n+1}</span>${t} <small class="stp">${ids.filter(i=>mastery(unit(i))>=85).length}/${ids.length} ✅</small></h2><div class="grid">${ids.map(stepCard).join("")}</div>`).join("")}
+  $.innerHTML=`<div class="lvs">${["A1","A2","B1"].map(l=>`<button class="${LV()===l?"on":"alt"}" onclick="setLvl('${l}')">${LVLAB[l]}</button>`).join("")}</div>`+syncBanner()+`<div class="top2">${dash()}</div>`+prioSection()+`<div class="top2">${prioCard()}${revCard()}`+(nx?`<div class="cat next" style="--c:${nx.color}" onclick="openAny('${nx.id}')"><div class="ic">▶</div><b>Prochaine étape : ${nx.icon} ${nx.name}</b><small>Touche pour continuer ton parcours ${LV()}</small></div>`:`<div class="q">🎉 Parcours ${LV()} terminé !${NEXTLV[LV()]?`<div class="nav"><button onclick="setLvl('${NEXTLV[LV()]}')">${LVLAB[NEXTLV[LV()]]} ▶</button></div>`:""}</div>`)+"</div>"+
+  steps().map(([t,ids],n)=>`<section class="sec"><h2><span class="num">${n+1}</span>${t} <small class="stp">${ids.filter(i=>mastery(unit(i))>=85).length}/${ids.length} ✅</small></h2><div class="grid">${ids.map(stepCard).join("")}</div></section>`).join("")}
 
 // ---- Pinyin & tons
 const TONES=[["1","mā","妈","maman","<b>Aigu et plat</b> : tu restes en haut, voix constante (comme tenir une note aiguë)."],["2","má","麻","chanvre","<b>Montant</b> : de moyen vers aigu, comme une question surprise « Quoi ? »."],["3","mǎ","马","cheval","<b>Grave</b> : tu descends en bas (voix grave), puis tu remontes un peu."],["4","mà","骂","gronder","<b>Descendant</b> : tu pars de l'aigu et tu tombes d'un coup vers le grave, comme un ordre sec « Non ! »."],["0","ma","吗","(question)","<b>Neutre</b> : léger, court, sans mélodie propre."]];
