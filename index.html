@@ -111,7 +111,7 @@ main{padding:10px 12px}h2{font-size:1.1rem;margin:.6em 0 .4em}h3{font-size:1rem;
 header{flex-wrap:wrap}header h1{flex:1 0 auto}
 html,body{overflow-x:hidden}
 /* v3 */
-nav#bn{display:grid;grid-template-columns:repeat(4,1fr);width:100%;box-sizing:border-box}
+nav#bn{display:grid;grid-template-columns:repeat(5,1fr);width:100%;box-sizing:border-box}
 nav#bn button{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:8px 2px}
 nav#bn button:hover{background:#fff3d6}
 #lr,#gr{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:6px 10px}
@@ -199,6 +199,14 @@ nav#bn button:hover{background:#fff3d6}
 .hm-t .meta{display:flex;align-items:center;gap:8px;margin-top:7px}.hm-t .meta .hm-bar{flex:1}.hm-t .meta span{font-size:.72rem;color:var(--mut);min-width:28px;text-align:right}
 .hm-t.done .meta span{color:var(--ok);font-weight:800}
 @media(max-width:700px){.hm{gap:14px}.hm-stats{grid-template-columns:1fr 1fr}.hm-me-card{grid-column:1/-1}.hm-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.hm-t{grid-template-columns:26px minmax(0,1fr);column-gap:8px;padding:8px 10px}.hm-t .ic{font-size:1.25rem}.hm-t b{font-size:.84rem}.hm-acts{grid-template-columns:1fr}}
+.lb-list{background:#fff;border:1px solid #eee;border-radius:14px;overflow:hidden}
+.lb{display:flex;align-items:center;gap:12px;padding:8px 14px;border-bottom:1px solid #f1ece4}.lb:last-child{border-bottom:0}
+.lb.me{background:#fff6dd}.lb-n{width:28px;text-align:center;font-weight:800;font-size:1.1rem;color:var(--mut)}
+.lb-av svg{display:block;border-radius:50%}.lb-nm{flex:1;min-width:0;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.lb-nm small{color:var(--mut);font-weight:600}
+.lb-sub{font-size:.78rem;color:var(--mut);font-weight:500}.lb-xp{font-weight:800;white-space:nowrap}.lb-xp small{color:var(--mut);font-weight:600}
+nav#bn{flex-wrap:nowrap}nav#bn button{white-space:nowrap;min-width:0}
+.lb-leave{font-size:.82rem;color:var(--mut);text-decoration:underline;cursor:pointer}
+@media(max-width:600px){nav#bn button{font-size:.78rem;padding:10px 2px}}
 @media(max-width:600px){.top2 .cat.next small{display:none}}
 @media(max-width:600px){select,input[type=text],input:not([type]){min-height:42px;font-size:16px}button{min-height:38px}#tip{max-width:calc(100vw - 16px)}}
 .q+.tiles{margin-top:16px}
@@ -257,7 +265,7 @@ nav#bn button:hover{background:#fff3d6}
  <div class="srow" style="display:block"><b>☁️ Sauvegarde <span id="cld">…</span></b><div id="ci" style="font-size:.85rem;margin:6px 0;line-height:1.5"></div><div class="nav" style="justify-content:flex-start;margin-top:4px"><button class="alt" onclick="forcePush()">⬆️ Envoyer maintenant</button><button class="alt" onclick="exportS()">📤 Exporter</button><button class="alt" onclick="document.getElementById('imp').click()">📥 Importer</button><input type="file" id="imp" accept=".json" hidden onchange="importS(this)"><button class="alt" onclick="closeSet();plan()">🔑 Code</button></div></div>
  <div class="nav"><button onclick="closeSet()">Fermer</button></div>
 </div></div>
-<nav id="bn"><button onclick="home()">🏠 Parcours</button><button onclick="chars()">🈶 Caractères</button><button onclick="plan()">📊 Mon plan</button><button onclick="search()">🔍 Chercher</button></nav>
+<nav id="bn"><button onclick="home()">🏠 Parcours</button><button onclick="chars()">🈶 Caractères</button><button onclick="plan()">📊 Mon plan</button><button onclick="rankPage()">🏆 Classement</button><button onclick="search()">🔍 Chercher</button></nav>
 <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
 <script>
 // [hanzi, pinyin, français, visuel (emoji | #couleur | texte)]
@@ -776,6 +784,24 @@ function home(){cur=home;cat=null;head();const nx=nextUnit(),st=stats(),E=eta(st
   `<div class="hm-acts">${acts}</div>`+
   (pu.length?`<section class="hm-sec"><h2>⭐ À travailler en premier</h2><div class="hm-grid">${pu.map(u=>hmTile(u.id)).join("")}</div></section>`:"")+
   steps().map(([t,ids],n)=>`<section class="hm-sec"><h2><span class="hm-n">${n+1}</span>${t}<small>${ids.filter(i=>mastery(unit(i))>=85).length}/${ids.length}</small></h2><div class="hm-grid">${ids.map(hmTile).join("")}</div></section>`).join("")+`</div>`}
+
+/* ---------- classement (inscrits, opt-in) ---------- */
+const medal=i=>["🥇","🥈","🥉"][i]||String(i+1);
+const escH=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+async function rankPost(body){try{const r=await fetch(API+"?rank=1&k="+CODE,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});return r.ok}catch(e){return false}}
+async function rankJoin(){if(await rankPost({name:PNAME})){toast("🏆 Tu es dans le classement");rankPage()}else toast("Impossible pour le moment")}
+async function rankLeave(){if(!confirm("Quitter le classement ? Ton nom et ton avatar n'y seront plus visibles."))return;if(await rankPost({leave:1})){toast("Tu as quitté le classement");rankPage()}}
+async function rankPage(){cur=rankPage;cat=null;head();
+  $.innerHTML=`<div class="hm"><h2 style="margin:0">🏆 Classement</h2><div class="hm-card">Chargement…</div></div>`;
+  if(PNAME){try{await push()}catch(e){}}
+  let R=null;try{const r=await fetch(API+"?rank=1&k="+CODE,{cache:"no-store"});if(r.ok)R=await r.json()}catch(e){}
+  if(!R){$.innerHTML=`<div class="hm"><h2 style="margin:0">🏆 Classement</h2><div class="hm-card">Serveur injoignable, réessaie dans un instant.</div></div>`;return}
+  const join=!PNAME?`<div class="hm-sync"><div style="flex:1 1 240px"><b>👤 Connecte-toi pour participer</b><div class="hm-sub" style="margin:0">Le classement est réservé aux comptes inscrits.</div></div><div role="button" class="hm-btn" onclick="profOpen()">Se connecter / créer un compte</div></div>`
+    :!R.me?`<div class="hm-sync"><div style="flex:1 1 240px"><b>Rejoindre le classement ?</b><div class="hm-sub" style="margin:0">Seront visibles par les autres inscrits : ton nom « ${escH(PNAME)} », ton avatar, ton XP, tes mots acquis et ta série. Tu peux quitter à tout moment.</div></div><div role="button" class="hm-btn" onclick="rankJoin()">🏆 Rejoindre</div></div>`:"";
+  const rows=R.list.map((u,i)=>`<div class="lb${u.me?" me":""}"><div class="lb-n">${medal(i)}</div><div class="lb-av">${avSVG(u.av,40)}</div><div class="lb-nm">${escH(u.name)}${u.me?" <small>(toi)</small>":""}<div class="lb-sub">📚 ${u.words} mots · 🔥 ${u.streak} j</div></div><div class="lb-xp">⭐ ${u.xp}<small> XP</small></div></div>`).join("");
+  $.innerHTML=`<div class="hm"><div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap"><h2 style="margin:0">🏆 Classement</h2><small style="color:var(--mut)">${R.total} participant${R.total>1?"s":""} · classés par XP</small></div>${join}`+
+    (R.list.length?`<div class="lb-list">${rows}</div>`:`<div class="hm-card" style="text-align:center;color:var(--mut)">Personne dans le classement pour l'instant. Sois le premier !</div>`)+
+    (PNAME&&R.me?`<div style="text-align:center"><span class="lb-leave" role="button" onclick="rankLeave()">Quitter le classement</span></div>`:"")+`</div>`}
 
 // ---- Pinyin & tons
 const TONES=[["1","mā","妈","maman","<b>Aigu et plat</b> : tu restes en haut, voix constante (comme tenir une note aiguë)."],["2","má","麻","chanvre","<b>Montant</b> : de moyen vers aigu, comme une question surprise « Quoi ? »."],["3","mǎ","马","cheval","<b>Grave</b> : tu descends en bas (voix grave), puis tu remontes un peu."],["4","mà","骂","gronder","<b>Descendant</b> : tu pars de l'aigu et tu tombes d'un coup vers le grave, comme un ordre sec « Non ! »."],["0","ma","吗","(question)","<b>Neutre</b> : léger, court, sans mélodie propre."]];

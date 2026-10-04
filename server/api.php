@@ -3,6 +3,7 @@
 header("Content-Type: application/json; charset=utf-8");
 header("Cache-Control: no-store");
 $k = $_GET["k"] ?? "";
+if (isset($_GET["rank"])) { rank_main($k); exit; }
 if (!preg_match("/^[a-z0-9]{8,40}$/", $k)) { http_response_code(400); echo "{\"error\":\"bad key\"}"; exit; }
 $h = hash("sha256", $k);
 $f = "/var/lib/chinois/$h.json";
@@ -22,4 +23,34 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
   echo "{\"ok\":true}";
 } else {
   echo is_file($f) ? file_get_contents($f) : "null";
+}
+
+// Classement : opt-in (nom public). Les stats sont lues dans le fichier de progression, jamais envoyées par le client.
+function rank_main($k) {
+  $dir = "/var/lib/chinois/rank"; if (!is_dir($dir)) { @mkdir($dir, 0700, true); }
+  $kok = preg_match("/^[a-z0-9]{8,40}$/", $k); $h = $kok ? hash("sha256", $k) : "";
+  if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    if (!$kok || !is_file("/var/lib/chinois/$h.json")) { http_response_code(400); echo "{\"error\":\"no profile\"}"; exit; }
+    $b = json_decode(file_get_contents("php://input", false, null, 0, 2001), true);
+    if (!is_array($b)) { http_response_code(400); echo "{\"error\":\"bad body\"}"; exit; }
+    if (!empty($b["leave"])) { @unlink("$dir/$h.json"); echo "{\"ok\":true,\"left\":true}"; exit; }
+    $name = trim(preg_replace("/[^\p{L}\p{N} _.\-]/u", "", (string)($b["name"] ?? "")));
+    $name = mb_substr($name, 0, 20);
+    if (mb_strlen($name) < 2) { http_response_code(400); echo "{\"error\":\"bad name\"}"; exit; }
+    file_put_contents("$dir/$h.json", json_encode(["name" => $name, "ts" => time()], JSON_UNESCAPED_UNICODE), LOCK_EX);
+    echo "{\"ok\":true}"; exit;
+  }
+  $out = []; $me = false; $yday = date("Y-m-d", time() - 86400);
+  foreach (array_slice(glob("$dir/*.json") ?: [], 0, 300) as $rf) {
+    $id = basename($rf, ".json"); $r = json_decode(@file_get_contents($rf), true); $pf = "/var/lib/chinois/$id.json";
+    if (!is_array($r) || !is_file($pf)) continue;
+    $S = json_decode(@file_get_contents($pf), true); if (!is_array($S)) continue;
+    $words = 0; foreach (($S["known"] ?? []) as $a) { if (is_array($a)) $words += count($a); }
+    $streak = (int)($S["streak"] ?? 0); if (($S["last"] ?? "") < $yday) $streak = 0;
+    $av = []; foreach (($S["av"] ?? []) as $ak => $av_v) { if (is_string($ak) && preg_match("/^[a-z]{2,8}$/", $ak) && is_int($av_v) && $av_v >= 0 && $av_v < 100 && count($av) < 20) $av[$ak] = $av_v; }
+    $isme = ($id === $h); if ($isme) $me = true;
+    $out[] = ["name" => $r["name"], "xp" => (int)($S["xp"] ?? 0), "words" => $words, "streak" => $streak, "av" => $av, "me" => $isme];
+  }
+  usort($out, function ($a, $b) { return [$b["xp"], $b["words"]] <=> [$a["xp"], $a["words"]]; });
+  echo json_encode(["list" => array_slice($out, 0, 100), "me" => $me, "total" => count($out)], JSON_UNESCAPED_UNICODE);
 }
