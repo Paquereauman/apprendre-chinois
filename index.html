@@ -438,12 +438,13 @@ const CATS=[
 
 let S=null;try{S=JSON.parse(localStorage.getItem("zhA1")||"null")}catch(e){}
 S=S||{xp:0,best:{},known:{},streak:0,last:"",py:true};
+const API=location.hostname.endsWith("github.io")?"https://chinois.45-192-198-98.sslip.io/api.php":"api.php";
 let CODE="";try{CODE=localStorage.getItem("zhA1code")||""}catch(e){}
 if(!CODE){CODE=[...crypto.getRandomValues(new Uint8Array(12))].map(b=>"abcdefghjkmnpqrstuvwxyz23456789"[b%31]).join("");try{localStorage.setItem("zhA1code",CODE)}catch(e){}}
 let pushT=null;
 const setCloud=x=>{const e=document.getElementById("cld");if(e)e.textContent=x};
 const save=()=>{S.ts=Date.now();try{localStorage.setItem("zhA1",JSON.stringify(S))}catch(e){}clearTimeout(pushT);pushT=setTimeout(push,600);setCloud("☁️…")};
-async function push(){try{const r=await fetch("api.php?k="+CODE,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(S)});setCloud(r.ok?"☁️ ✓":"☁️ ⚠️")}catch(e){setCloud("☁️ ⚠️")}}
+async function push(){try{const r=await fetch(API+"?k="+CODE,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(S)});setCloud(r.ok?"☁️ ✓":"☁️ ⚠️")}catch(e){setCloud("☁️ ⚠️")}}
 function mergeS(A,B){const eA=A.epoch||0,eB=B.epoch||0;if(eB>eA)return JSON.parse(JSON.stringify(B));if(eA>eB)return JSON.parse(JSON.stringify(A));
   const M=JSON.parse(JSON.stringify(A)),h2=x=>x.replace(/[?!…。，, ]/g,"");M.known=M.known||{};M.best=M.best||{};
   Object.entries(B.known||{}).forEach(([id,arr])=>{const k=M.known[id]=M.known[id]||[];arr.forEach(h=>{if(!k.some(x=>h2(x)===h2(h)))k.push(h)})});
@@ -458,12 +459,12 @@ function mergeS(A,B){const eA=A.epoch||0,eB=B.epoch||0;if(eB>eA)return JSON.pars
   if(B.day&&(!M.day||B.day.d>M.day.d||(B.day.d===M.day.d&&B.day.n>M.day.n)))M.day=B.day;
   M.ts=Math.max(A.ts||0,B.ts||0);return M}
 const wordsIn=X=>Object.values((X&&X.known)||{}).flat().length;
-async function pull(){try{const r=await fetch("api.php?k="+CODE,{cache:"no-store"});if(!r.ok)throw 0;const t=await r.text();
+async function pull(){try{const r=await fetch(API+"?k="+CODE,{cache:"no-store"});if(!r.ok)throw 0;const t=await r.text();
   if(!t||t.trim()==="null"){setCloud("☁️ ✓");push();return}
   const R=JSON.parse(t),M=mergeS(S,R),chS=JSON.stringify(M)!==JSON.stringify(S),chR=JSON.stringify(M)!==JSON.stringify(R);
   if(chS){S=M;syncKnown();try{localStorage.setItem("zhA1",JSON.stringify(S))}catch(e){}head();if(cur)cur()}
   if(chR)push();else setCloud("☁️ ✓")}catch(e){setCloud("☁️ ⚠️")}}
-async function cloudInfo(){const el=document.getElementById("ci");if(!el)return;el.textContent="…";try{const r=await fetch("api.php?k="+CODE,{cache:"no-store"}),t=await r.text(),R=t.trim()==="null"?null:JSON.parse(t);
+async function cloudInfo(){const el=document.getElementById("ci");if(!el)return;el.textContent="…";try{const r=await fetch(API+"?k="+CODE,{cache:"no-store"}),t=await r.text(),R=t.trim()==="null"?null:JSON.parse(t);
   el.innerHTML=`Ce navigateur : <b>${wordsIn(S)}</b> mots · ${S.xp||0} XP<br>Serveur : <b>${R?wordsIn(R):"rien"}</b> mots${R?" · "+(R.xp||0)+" XP":""}<br>Code : <b>${CODE}</b>`}catch(e){el.textContent="Serveur injoignable"}}
 function forcePush(){setCloud("☁️…");push().then(cloudInfo)}
 function exportS(){const b=new Blob([JSON.stringify(S)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="progression-chinois-"+tdy()+".json";a.click()}

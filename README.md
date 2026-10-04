@@ -11,6 +11,8 @@
 
 **Une seule page web. Aucun framework. Fonctionne sur ordinateur et téléphone.**
 
+### 👉 [Ouvrir l'application](https://paquereauman.github.io/apprendre-chinois/)
+
 </div>
 
 ---
