@@ -1187,13 +1187,14 @@ function pyChar(el,hz,pos){const t=el.textContent,L=[];[...t].forEach((c,i)=>{if
     if(!e||ls.substr(c,e.length)!==e){const m=ls.slice(c).match(/^(?:zh|ch|sh|[bpmfdtnlgkhjqxrzcsyw])?[aeiouv]+(?:ng|n)?/);if(!m)return -1;e=m[0]}
     rg.push([L[c][0],L[c+e.length-1][0]]);c+=e.length}
   return rg.findIndex(z=>pos>=z[0]&&pos<=z[1])}
+const isPh=w=>{const e=LEXW[w];return !!e&&[...w].length>1&&e.f.some(x=>/…|^(Je |J'|Tu |Aidez|C'est |Comment ça va|Super|Combien ça)/.test(x))};
 function startTips(){const tip=document.createElement("div");tip.id="tip";document.body.appendChild(tip);let last="";
   const place=(x,y)=>{const r=tip.getBoundingClientRect();tip.style.left=Math.max(6,Math.min(x+14,innerWidth-r.width-6))+"px";tip.style.top=(y+18+r.height>innerHeight?Math.max(6,y-r.height-12):y+18)+"px"};
   const hide=()=>{tip.style.display="none";last=""};
   const show=(h,x,y)=>{let hz,pos=charAt(h,x,y),wd,idx=-1,html;
     if(h.dataset.py){hz=[...h.dataset.w];idx=pos<0?-1:pyChar(h,hz,pos);const hs=h._hs||[];let c=0;wd=null;for(const z of hs){const n=[...z.dataset.w].length;if(idx>=0&&idx<c+n){wd=z.dataset.w;idx-=c;break}c+=n}if(!wd)return hide()}
     else{wd=h.dataset.w;idx=pos}
-    if([...wd].length>=4){const A=[...wd],k=Math.max(0,Math.min(idx,A.length-1));let i=0;while(i<A.length){let L=1;for(let l=Math.min(MAXL,A.length-i,A.length-1);l>=2;l--){if(LEXW[A.slice(i,i+l).join("")]){L=l;break}}if(k<i+L){wd=A.slice(i,i+L).join("");idx=k-i;break}i+=L}}
+    if([...wd].length>=4||isPh(wd)){const A=[...wd],k=Math.max(0,Math.min(idx,A.length-1));let i=0;while(i<A.length){let L=1;for(let l=Math.min(MAXL,A.length-i,A.length-1);l>=2;l--){if(LEXW[A.slice(i,i+l).join("")]){L=l;break}}if(k<i+L){wd=A.slice(i,i+L).join("");idx=k-i;break}i+=L}}
     const a=[...wd],ch=a[Math.max(0,Math.min(idx,a.length-1))],key=wd+"|"+ch;if(key===last&&tip.style.display==="block")return place(x,y);last=key;
     const e=LEXW[wd],pin=c=>(LEXW[c]&&LEXW[c].p)||PINMAP[c]||CPIN[c]||"",sh=m=>cshort(m.split(/ ;|,| \(/)[0].trim());
     if(a.length>1){html=`<b>${wd}</b> <span>${e?e.p:a.map(pin).join(" ")}</span>${e&&e.f.length?`<div>${e.f.slice(0,2).join(" · ")}</div>`:""}`+
