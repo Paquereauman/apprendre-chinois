@@ -1141,17 +1141,34 @@ function annotate(){if(ANN)return;const root=document.getElementById("app");if(!
       flush();n.parentNode.replaceChild(frag,n)});
     root.querySelectorAll(".py,.py2").forEach(P=>{if(P.dataset.w!==undefined||P.closest(".hz,.pyh"))return;const par=P.parentElement;if(!par)return;
       const hs=[...par.querySelectorAll(".hz")].filter(z=>(z.compareDocumentPosition(P)&Node.DOCUMENT_POSITION_FOLLOWING)&&!z.closest(".py,.py2"));if(!hs.length)return;
-      P.dataset.w=hs.map(z=>z.dataset.w).join("");P.dataset.py="1";P.classList.add("pyh")});
+      P._hs=hs;P.dataset.w=hs.map(z=>z.dataset.w).join("");P.dataset.py="1";P.classList.add("pyh")});
     if(nodes.length&&!S.hintTip){S.hintTip=1;save();setTimeout(()=>toast("💡 Survole un caractère ou son pinyin (ou touche-le) pour voir son sens et ses composants"),1500)}
   }finally{ANN=false}}
-function startTips(){const tip=document.createElement("div");tip.id="tip";document.body.appendChild(tip);
+const nrm=x=>x.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
+function charAt(el,x,y){const w=document.createTreeWalker(el,NodeFilter.SHOW_TEXT);let n,off=0,hit=-1;
+  while((n=w.nextNode())){const t=n.nodeValue;for(let i=0;i<t.length;i++){const r=document.createRange();r.setStart(n,i);r.setEnd(n,i+1);const q=r.getClientRects()[0];
+    if(q&&x>=q.left&&x<=q.right&&y>=q.top-2&&y<=q.bottom+2)hit=off+i}off+=t.length}
+  return hit}
+function pyChar(el,hz,pos){const t=el.textContent,L=[];[...t].forEach((c,i)=>{if(/[a-zA-Zǖǘǚǜüāáǎàēéěèīíǐìōóǒòūúǔù]/.test(c))L.push([i,nrm(c)])});
+  const ls=L.map(z=>z[1]).join("");let c=0;const rg=[];
+  for(const ch of hz){let e=nrm((LEXW[ch]&&LEXW[ch].p)||PINMAP[ch]||"").replace(/[^a-z]/g,"");
+    if(!e||ls.substr(c,e.length)!==e){const m=ls.slice(c).match(/^(?:zh|ch|sh|[bpmfdtnlgkhjqxrzcsyw])?[aeiouv]+(?:ng|n)?/);if(!m)return -1;e=m[0]}
+    rg.push([L[c][0],L[c+e.length-1][0]]);c+=e.length}
+  return rg.findIndex(z=>pos>=z[0]&&pos<=z[1])}
+function startTips(){const tip=document.createElement("div");tip.id="tip";document.body.appendChild(tip);let last="";
   const place=(x,y)=>{const r=tip.getBoundingClientRect();tip.style.left=Math.max(6,Math.min(x+14,innerWidth-r.width-6))+"px";tip.style.top=(y+18+r.height>innerHeight?Math.max(6,y-r.height-12):y+18)+"px"};
-  const show=(h,x,y)=>{const ph=h.closest("[data-fr]");let html;
-    if(h.dataset.py){const wd=h.dataset.w;html=`<div class="pt">${h.textContent.trim()}</div>`+(LEXW[wd]?tipFor(wd):`<div class="tp" style="border:0;margin:0;padding:0">${gloss(wd)}</div>`)}else html=tipFor(h.dataset.w);
-    tip.innerHTML=html+(ph?`<div class="tp">💬 ${ph.dataset.fr}</div>`:"");tip.style.display="block";place(x,y)};
-  document.addEventListener("mouseover",e=>{const h=e.target.closest&&e.target.closest(".hz,.pyh");if(h)show(h,e.clientX,e.clientY);else tip.style.display="none"});
-  document.addEventListener("mousemove",e=>{if(tip.style.display==="block")place(e.clientX,e.clientY)});
-  document.addEventListener("click",e=>{const h=e.target.closest&&e.target.closest(".hz,.pyh");if(h&&matchMedia("(hover:none)").matches){const r=h.getBoundingClientRect();show(h,r.left,r.bottom-18);clearTimeout(tipT);tipT=setTimeout(()=>tip.style.display="none",3500)}else if(!h)tip.style.display="none"});
+  const hide=()=>{tip.style.display="none";last=""};
+  const show=(h,x,y)=>{let hz,pos=charAt(h,x,y),wd,idx=-1,html;
+    if(h.dataset.py){hz=[...h.dataset.w];idx=pos<0?-1:pyChar(h,hz,pos);const hs=h._hs||[];let c=0;wd=null;for(const z of hs){const n=[...z.dataset.w].length;if(idx>=0&&idx<c+n){wd=z.dataset.w;idx-=c;break}c+=n}if(!wd)return hide()}
+    else{wd=h.dataset.w;idx=pos}
+    const a=[...wd],ch=a[Math.max(0,Math.min(idx,a.length-1))],key=wd+"|"+ch;if(key===last&&tip.style.display==="block")return place(x,y);last=key;
+    html=tipFor(ch);const e=LEXW[wd];
+    if(a.length>1)html+=`<div class="tp">Mot : <b class="cm">${wd}</b> ${e?e.p+(e.f[0]?" · "+cshort(e.f[0]):""):""}</div>`;
+    tip.innerHTML=html;tip.style.display="block";place(x,y)};
+  const upd=e=>{const h=e.target.closest&&e.target.closest(".hz,.pyh");if(h)show(h,e.clientX,e.clientY);else hide()};
+  document.addEventListener("mouseover",upd);
+  document.addEventListener("mousemove",e=>{if(matchMedia("(hover:none)").matches)return;if(tip.style.display==="block"||e.target.closest&&e.target.closest(".hz,.pyh"))upd(e)});
+  document.addEventListener("click",e=>{const h=e.target.closest&&e.target.closest(".hz,.pyh");if(h&&matchMedia("(hover:none)").matches){show(h,e.clientX,e.clientY-30);clearTimeout(tipT);tipT=setTimeout(hide,3500)}else if(!h)hide()});
   let raf=0;new MutationObserver(()=>{if(ANN)return;cancelAnimationFrame(raf);raf=requestAnimationFrame(annotate)}).observe(document.getElementById("app"),{childList:true,subtree:true});annotate()}
 
 // ---- Niveau B1
