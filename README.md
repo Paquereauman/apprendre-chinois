@@ -43,6 +43,12 @@
 
 Chaque thème contient aussi **3 phrases utiles** qui ne comptent pas dans la progression.
 
+## 🌐 Hébergement
+
+- **Application** : GitHub Pages — https://paquereauman.github.io/apprendre-chinois/
+- **Sauvegarde de la progression** : petite API PHP sur un VPS, en HTTPS, avec CORS limité à `paquereauman.github.io` (`server/`). Sans elle, l'application fonctionne quand même : la progression reste dans le navigateur (export/import possible).
+- Chaque navigateur a son propre code de sauvegarde ; entre le même code sur un autre navigateur pour retrouver ta progression.
+
 ## 🚀 Démarrer
 
 ```bash
@@ -62,7 +68,7 @@ Sans serveur, tout fonctionne sauf les MP3 (la synthèse vocale du navigateur pr
 index.html              toute l'application (données + interface + logique)
 audio/                  MP3 + map.json (texte → fichier)
 server/api.php          API de sauvegarde (PHP, un JSON par code secret)
-server/nginx-*.conf     exemple de configuration nginx
+server/nginx-chinois-api.conf  exemple de configuration nginx (HTTPS + CORS)
 server/backup-*.sh      sauvegarde périodique du dossier de données
 manifest.webmanifest    icône et ajout à l'écran d'accueil
 ```
