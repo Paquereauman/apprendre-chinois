@@ -185,6 +185,9 @@ nav#bn button:hover{background:#fff3d6}
 @media(max-width:600px){.dash{gap:10px}.avb svg{width:56px;height:56px}.ring{width:64px;height:64px}.ring span{width:48px;height:48px;font-size:1rem}}
 @media(min-width:900px){.grid{grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}.grid[style]{gap:10px}}
 @media(min-width:1300px){main{max-width:1280px}}
+.sheet{align-items:center;padding:12px;z-index:300}
+.sbox{border-radius:20px;max-height:calc(100dvh - 24px);overflow-y:auto;overscroll-behavior:contain;padding:16px 18px}
+#prof .sbox p{margin:0 0 6px}#prof .nav{margin-top:10px}
 </style>
 </head>
 <body>
@@ -197,7 +200,7 @@ nav#bn button:hover{background:#fff3d6}
 <div id="hp"><i></i></div></header>
 <div id="crumb"></div>
 <main id="app"></main>
-<div id="avp" class="sheet" onclick="if(event.target===this)avClose()"><div class="sbox" style="max-height:92vh;overflow:auto">
+<div id="avp" class="sheet" onclick="if(event.target===this)avClose()"><div class="sbox">
  <h3 style="margin:0 0 8px">🧑 Mon avatar</h3>
  <div id="avprev" style="text-align:center"></div>
  <div id="avrows"></div>
