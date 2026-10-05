@@ -5,8 +5,8 @@
 ### Un parcours **A1 → B1** pour apprendre le mandarin en français — vocabulaire, tons, grammaire, caractères.
 
 ![niveaux](https://img.shields.io/badge/niveaux-A1%20%C2%B7%20A2%20%C2%B7%20B1-e63946?style=for-the-badge)
-![mots](https://img.shields.io/badge/vocabulaire-~900%20mots-f4a300?style=for-the-badge)
-![audio](https://img.shields.io/badge/audio-1%C2%A0319%20MP3-2bb673?style=for-the-badge)
+![mots](https://img.shields.io/badge/vocabulaire-~1%C2%A0200%20mots-f4a300?style=for-the-badge)
+![audio](https://img.shields.io/badge/audio-1%C2%A0585%20MP3-2bb673?style=for-the-badge)
 ![zero dependance](https://img.shields.io/badge/d%C3%A9pendances-0-457b9d?style=for-the-badge)
 
 **Une seule page web. Aucun framework. Fonctionne sur ordinateur et téléphone.**
@@ -30,7 +30,7 @@
 | 📝 **Test de niveau** | 2 questions par mot, résultats prudents, estimation honnête du temps restant selon ton rythme (mots par jour ou par semaine). |
 | 🧱 **Grammaire** | 15 + 16 + 16 **leçons indépendantes**, placées dans le parcours à côté du vocabulaire qui leur est lié (ex. « Mots interrogatifs » près du thème *Poser des questions*), chacune avec son exercice d'ordre des mots ; 15 + 16 + 16 leçons avec exemples sonorisés, exercice d'ordre des mots, nuances entre verbes proches (去/来, 借/还, 遇到/碰到…). |
 | 🈶 **Caractères** | Logique et philosophie de l'écriture, ordre des traits, 50 caractères à tracer à la main. |
-| 🎙️ **Voix d'homme naturelle** | 1 319 MP3 pré-générés (voix neuronale Yunxi) ; repli automatique sur la voix du navigateur. |
+| 🎙️ **Voix d'homme naturelle** | 1 585 MP3 pré-générés (voix neuronale Yunxi) ; repli automatique sur la voix du navigateur. |
 | 👤 **Compte & sauvegarde sans perte** | Un nom + un mot de passe (clé dérivée dans le navigateur, jamais envoyée en clair) pour retrouver ta progression sur tous tes appareils ; fusion intelligente et copies de secours. Proposé dès la première visite. |
 | 🏆 **Classement** | Page réservée aux inscrits, **sur inscription volontaire** : nom, avatar, XP, mots acquis et série ; on peut le quitter à tout moment. |
 | 🧑‍🎤 **Avatar personnalisable** | 19 coupes, 15 chapeaux (斗笠, oreilles de panda ou de chat, chapeau de mandarin, baguettes à cheveux…), yeux (amande, kawaii, étoiles, cœurs…), bouches, lunettes, barbes, visage (masque chirurgical, peinture d'opéra de Pékin…), habits (col mandarin, hanfu, qipao…), couleurs de cheveux, de peau et de fond. |
@@ -79,6 +79,8 @@ manifest.webmanifest    icône et ajout à l'écran d'accueil
 
 ## 🆕 Dernières modifications
 
+- Nouveaux thèmes : **A2** — plats chinois (49), couverts & vaisselle, ustensiles de cuisine, nature & gestes verts ; **B1** — films, romans & avis, argumenter & nuancer, société / justice / inégalités, climat & débat écologique. B1 est désormais centré sur l'expression d'opinions.
+- Leçons de grammaire indépendantes, rapprochées du vocabulaire lié ; pinyin partout dans les exercices ; révision automatique des mots cochés « connus ».
 - Infobulles reprises : mot → combinaison → caractère, sens français pour ~600 caractères qui n'apparaissent que dans des mots composés, ~340 astuces mnémotechniques, phrases courtes découpées en mots.
 - Accueil entièrement refait (cartes, barres fines, grille régulière).
 - Avatar : nombreuses nouvelles options, dont des éléments asiatiques et farfelus.
