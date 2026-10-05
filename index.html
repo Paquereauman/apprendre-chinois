@@ -711,7 +711,11 @@ const sm=v=>v[0]==="#"?`<span class="sw sm" style="background:${v}"></span>`:v;
 const tdy=()=>addD(0);
 function addD(n){const d=new Date();d.setDate(d.getDate()+n);return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
 const INTV=[0,1,2,4,8,16,32];
-function srs(h,ok){const k=nk(h),r=S.rev=S.rev||{},e=r[k];if(ok){const b=e?Math.min(e.b+1,6):1;r[k]={b,d:addD(INTV[b])}}else r[k]={b:0,d:tdy()}}
+const ANCRE=4;
+function srs(h,ok){const k=nk(h),r=S.rev=S.rev||{},e=r[k];if(ok){const b=e?Math.min(e.b+1,6):1;r[k]={b,d:addD(INTV[b])};if(b===ANCRE&&(!e||e.b<ANCRE))setTimeout(()=>toast("🧠 Mot ancré : "+h),900)}else r[k]={b:0,d:tdy()}}
+/* les mots cochés « connus » dans les listes entrent dans la révision du jour (15 par jour au maximum pour l'ancien stock) */
+function ensureRev(){if(S.revMig)return;const r=S.rev=S.rev||{},miss=[];Object.values(S.known||{}).forEach(a=>a.forEach(h=>{const k=nk(h);if(!r[k]&&!miss.includes(k))miss.push(k)}));
+  miss.forEach((k,i)=>{r[k]={b:0,d:addD(Math.floor(i/15)),s:1}});S.revMig=1;if(miss.length)save()}
 function dueItems(){const t=tdy(),r=S.rev||{},seen={},out=[];ALL().forEach(c=>{if(c.mod)return;c.items.forEach(it=>{const k=nk(it[0]),e=r[k];if(e&&e.d<=t&&!seen[k]){seen[k]=1;out.push({it,c,d:e.d})}})});return out.sort((a,b)=>(isPrio(b.c.id)-isPrio(a.c.id))||(a.d<b.d?-1:1))}
 function goalDay(){const u=S.unit||"day",v=S.pace||5;return Math.max(1,Math.round(u==="week"?v/7:v))}
 function dayInc(){const t=tdy();if(!S.day||S.day.d!==t)S.day={d:t,n:0};S.day.n++;if(S.day.n===goalDay()&&!S.day.ok){S.day.ok=1;setTimeout(()=>celebrate("🎯 Objectif du jour atteint : "+goalDay()+" mots !"),400)}}
@@ -720,7 +724,7 @@ let DUP={};function buildDup(){DUP={};CATS.forEach(c=>c.items.forEach(i=>{(DUP[n
 const others=(h,cid)=>(DUP[nk(h)]||[]).filter(x=>x!==cid);
 const dupTag=(h,cid)=>{const o=others(h,cid);return o.length?`<small class="dup">🔁 aussi dans : ${o.map(id=>CATS.find(c=>c.id===id).name).join(", ")}</small>`:""};
 const itemIn=(id,h)=>CATS.find(c=>c.id===id).items.find(i=>nk(i[0])===nk(h))[0];
-function setKnown(cid,h,on){const ids=[cid,...others(h,cid)];ids.forEach(id=>{const k=S.known[id]=S.known[id]||[];const j=k.findIndex(x=>nk(x)===nk(h));if(on&&j<0){k.push(itemIn(id,h));if(id===cid)dayInc()}if(!on&&j>=0)k.splice(j,1)});if(on){const r=S.rev=S.rev||{};if(!r[nk(h)])r[nk(h)]={b:1,d:addD(1)}}else if(S.rev)delete S.rev[nk(h)];return ids}
+function setKnown(cid,h,on){const ids=[cid,...others(h,cid)];ids.forEach(id=>{const k=S.known[id]=S.known[id]||[];const j=k.findIndex(x=>nk(x)===nk(h));if(on&&j<0){k.push(itemIn(id,h));if(id===cid)dayInc()}if(!on&&j>=0)k.splice(j,1)});if(on){const r=S.rev=S.rev||{};if(!r[nk(h)])r[nk(h)]={b:0,d:tdy(),s:1}}else if(S.rev)delete S.rev[nk(h)];return ids}
 function syncKnown(){let ch=false;CATS.forEach(c=>(S.known[c.id]||[]).slice().forEach(h=>others(h,c.id).forEach(id=>{const k=S.known[id]=S.known[id]||[];if(!k.some(x=>nk(x)===nk(h))){k.push(itemIn(id,h));ch=true}})));if(ch)save()}
 const row=(it,cid,showCat)=>{const k=(S.known[cid]||[]).includes(it[0]);
   return `<div class="row" onclick="say('${esc(it[0])}')"><div class="rv">${sm(it[3])}</div><div class="rt"><b>${it[0]}</b>${S.py?` <span class="py2">${it[1]}</span>`:""}<div>${it[2]}${showCat?` <small class="tag">${CATS.find(c=>c.id===cid).name}</small>`:""}</div>${dupTag(it[0],cid)}</div><span class="rk${k?" on":""}" onclick="event.stopPropagation();know2('${cid}','${esc(it[0])}',this)">${k?"✓":""}</span><span class="rs">🔊</span></div>`};
@@ -1108,7 +1112,7 @@ function qDone(ok,skip,k){const q=Q.qs[Q.i];if(Q.lock)return;Q.lock=1;clearTimeo
   if(bs.length&&q.right>=0){if(k>=0&&bs[k])bs[k].classList.add(ok?"ok":"bad");bs[q.right].classList.add("ok")}
   const good=ok&&!skip;q.skip=!!skip;q.good=good;
   if(skip)beep(0);else{beep(ok);if(ok){Q.s++;q.ok=1;Q.c=(Q.c||0)+1}else Q.c=0}
-  if(q.it){srs(q.it[0],good);const nw=evid(q.it,q.c.id,q.t,good);if(nw){Q.nw=(Q.nw||0)+1;addXp(3);toast("✅ Mot confirmé : "+q.it[0]);setTimeout(()=>checkDone(nw),700)}}
+  if(q.it){srs(q.it[0],good);if(!good&&Q.mode==="rev"&&!q.rq&&q.c){const n2=mkQ(q.it,q.c.items,pickT(q.it),q.c);n2.rq=1;Q.qs.push(n2)}const nw=evid(q.it,q.c.id,q.t,good);if(nw){Q.nw=(Q.nw||0)+1;addXp(3);toast("✅ Mot confirmé : "+q.it[0]);setTimeout(()=>checkDone(nw),700)}}
   if(!skip){fxEl(k>=0&&bs[k]?bs[k]:document.querySelector(".q"),ok,Q.c>=3?"🔥 x"+Q.c:"+10 ⭐");if(ok&&Q.c===3)toast("🔥 Série de 3 !");if(ok&&Q.c===5){fanfare();toast("🔥🔥 5 d'affilée !")}}
   save();const box=document.querySelector(".q");box.querySelectorAll(":scope>.nav,#oq .nav").forEach(e=>e.remove());box.insertAdjacentHTML("beforeend",fbHTML(q,good,skip));
   if(q.t==="o"||q.t==="p"||q.t==="z")say(q.say||(q.it?q.it[0]:""));else if(q.it)say(q.it[0]);
@@ -1536,7 +1540,7 @@ function setCrumb(p){const c=document.getElementById("crumb");c.style.display=p.
 const T=["🏠 Parcours","home"],C=()=>[cat.icon+" "+cat.name,"menu"];
 Object.entries({home:()=>[],menu:()=>[T,[cat.name]],list:()=>[T,C(),["Liste"]],cards:()=>[T,C(),["Cartes"]],quiz:()=>[T,C(),["Quiz"]],match:()=>[T,C(),["Association"]],
  nuances:()=>[T,C(),["Nuances"]],chars:()=>[T,["Caractères"]],chDetail:i=>[T,["Caractères","chars"],[CH[i][0]]],search:()=>[T,["Recherche"]],plan:()=>[T,["Mon plan "+LV()]],pinyin:()=>[T,["Pinyin & tons"]],gram:()=>[T,["Grammaire"]],gLesson:()=>[T,["Leçon de grammaire"]],sentence:()=>[T,["Grammaire","gram"],["Exercice"],["我听不懂","wǒ tīng bu dǒng","Je ne comprends pas","🙉"]]}).forEach(([n,cr])=>{const f=window[n];window[n]=function(...a){f.apply(this,a);setCrumb(cr(...a))}});
-buildDup();syncKnown();touchStreak();home();pull();startTips();
+buildDup();syncKnown();ensureRev();touchStreak();home();pull();startTips();
 try{if(!PNAME&&!localStorage.getItem('zhA1skip'))setTimeout(profOpen,500)}catch(e){}
 /* mise à jour automatique : si une nouvelle version est publiée, la page se recharge une fois */
 (async()=>{try{if(!/^https?:/.test(location.protocol))return;const r=await fetch(location.pathname,{cache:"reload"}),t=await r.text();let h=0;for(let i=0;i<t.length;i+=7)h=(h*31+t.charCodeAt(i))|0;const o=localStorage.getItem("zhBuild");localStorage.setItem("zhBuild",String(h));if(o&&o!==String(h))location.reload()}catch(e){}})();
