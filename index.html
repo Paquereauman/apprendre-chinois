@@ -1538,6 +1538,8 @@ Object.entries({home:()=>[],menu:()=>[T,[cat.name]],list:()=>[T,C(),["Liste"]],c
  nuances:()=>[T,C(),["Nuances"]],chars:()=>[T,["Caractères"]],chDetail:i=>[T,["Caractères","chars"],[CH[i][0]]],search:()=>[T,["Recherche"]],plan:()=>[T,["Mon plan "+LV()]],pinyin:()=>[T,["Pinyin & tons"]],gram:()=>[T,["Grammaire"]],gLesson:()=>[T,["Leçon de grammaire"]],sentence:()=>[T,["Grammaire","gram"],["Exercice"],["我听不懂","wǒ tīng bu dǒng","Je ne comprends pas","🙉"]]}).forEach(([n,cr])=>{const f=window[n];window[n]=function(...a){f.apply(this,a);setCrumb(cr(...a))}});
 buildDup();syncKnown();touchStreak();home();pull();startTips();
 try{if(!PNAME&&!localStorage.getItem('zhA1skip'))setTimeout(profOpen,500)}catch(e){}
+/* mise à jour automatique : si une nouvelle version est publiée, la page se recharge une fois */
+(async()=>{try{if(!/^https?:/.test(location.protocol))return;const r=await fetch(location.pathname,{cache:"reload"}),t=await r.text();let h=0;for(let i=0;i<t.length;i+=7)h=(h*31+t.charCodeAt(i))|0;const o=localStorage.getItem("zhBuild");localStorage.setItem("zhBuild",String(h));if(o&&o!==String(h))location.reload()}catch(e){}})();
 </script>
 </body>
 </html>
