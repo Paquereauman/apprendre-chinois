@@ -207,6 +207,14 @@ nav#bn button:hover{background:#fff3d6}
 nav#bn{flex-wrap:nowrap}nav#bn button{white-space:nowrap;min-width:0}
 .ob{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.ob>span{display:inline-flex;flex-direction:column;align-items:center;border:2px solid var(--c);border-radius:8px;padding:2px 8px;line-height:1.2}.ob b{font-size:1.15rem}.ob small{font-size:.68rem;color:var(--c);font-weight:700}
 .gl{color:var(--mut);font-weight:500;font-size:.85em}
+.avtools{display:flex;gap:8px;justify-content:center;margin:6px 0}
+.avtabs{display:flex;gap:6px;overflow-x:auto;padding:6px 2px;margin:4px 0;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+.avt{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:62px;padding:6px 8px;border-radius:12px;background:#f1e8dc;font-size:.72rem;font-weight:700;cursor:pointer;color:var(--mut);user-select:none}.avt span{font-size:1.15rem}
+.avt.on{background:var(--red);color:#fff}
+.avgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:8px;max-height:44vh;overflow:auto;padding:4px 2px}
+.avc{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px;border:2px solid transparent;border-radius:12px;background:#faf6ef;cursor:pointer;text-align:center}.avc small{font-size:.66rem;line-height:1.1;color:var(--mut);font-weight:600}.avc svg{display:block}.avc.on{border-color:var(--red);background:#fff}
+.avsw2{display:flex;flex-wrap:wrap;gap:8px;padding:6px 2px;justify-content:center}.avsw2 button{width:38px;height:38px;border-radius:50%;padding:0;border:3px solid #fff;box-shadow:0 0 0 1px #ccc;min-height:0}.avsw2 button[aria-pressed="true"]{box-shadow:0 0 0 3px var(--red)}
+.avcu{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 4px;padding:8px 12px;background:#faf6ef;border-radius:12px;font-weight:600;font-size:.9rem}.avcu input{width:56px;height:36px;border:0;padding:0;background:none;cursor:pointer}
 .lb-leave{font-size:.82rem;color:var(--mut);text-decoration:underline;cursor:pointer}
 @media(max-width:600px){nav#bn button{font-size:.78rem;padding:10px 2px}}
 @media(max-width:600px){.top2 .cat.next small{display:none}}
@@ -243,11 +251,13 @@ nav#bn{flex-wrap:nowrap}nav#bn button{white-space:nowrap;min-width:0}
 <div id="hp"><i></i></div></header>
 <div id="crumb"></div>
 <main id="app"></main>
-<div id="avp" class="sheet" onclick="if(event.target===this)avClose()"><div class="sbox">
+<div id="avp" class="sheet" onclick="if(event.target===this)avClose()"><div class="sbox" style="max-width:600px">
  <h3 style="margin:0 0 8px">🧑 Mon avatar</h3>
  <div id="avprev" style="text-align:center"></div>
+ <div class="avtools"><div role="button" class="hm-btn alt" onclick="avRand()">🎲 Au hasard</div><div role="button" class="hm-btn alt" onclick="avUndo()">↩️ Annuler</div></div>
+ <div id="avtabs" class="avtabs"></div>
  <div id="avrows"></div>
- <div class="nav"><button class="alt" onclick="avRand()">🎲 Au hasard</button><button onclick="avClose()">Terminer</button></div>
+ <div class="nav"><button onclick="avClose()">✔ Terminer</button></div>
 </div></div>
 <div id="prof" class="sheet" onclick="if(event.target===this)profClose()"><div class="sbox">
  <h3 style="margin:0 0 6px">👤 Mon profil</h3>
@@ -610,11 +620,11 @@ function eta(st){const u=S.unit||"day",v=S.pace||5,wpd=u==="week"?v/7:v;if(st.re
 /* ---------- avatar personnalisable (SVG) ---------- */
 const AV_OPT={skin:["#fde0c8","#f5c9a0","#e0a577","#c68642","#8d5524","#5c3a1e","#ffd93d","#fff0e0","#f2d19a","#9bd36b","#7fb8ff","#ff9ec7","#b7b7c2"],hair:["#2b1d14","#5a3825","#a0642f","#d9a441","#e8d9a8","#b83a2e","#8e8e96","#3a5fcd","#c2479b","#00b5b0","#7b4fd1","#ff7a00","#f4f4f4","#15152b","#ff9ec7","#2bb673"],
  bg:["#ffe3e0","#ffefc2","#d8f3dc","#d6e8ff","#e6dcff","#e9e9e9","#e63946","#f4c20d","#2bb673","#1d2b53","#ff9ec7","#222222"],clo:["#e63946","#f4a300","#2bb673","#457b9d","#7b4fd1","#2b2b33","#f4c20d","#ffffff","#8b0000","#1d3557","#e76f51","#00a896"]};
-const AV_N={style:19,eyes:12,brows:3,nose:3,mouth:10,glasses:8,beard:6,hat:15,face:10,top:6};
-const AV_DEF={skin:1,hair:0,style:1,eyes:1,brows:0,nose:0,mouth:0,glasses:0,beard:0,hat:0,face:0,top:0,bg:1,clo:0};
-const AV_LAB={style:"Coupe",hair:"Cheveux",skin:"Peau",eyes:"Yeux",brows:"Sourcils",nose:"Nez",mouth:"Bouche",glasses:"Lunettes",beard:"Barbe",clo:"Couleur du haut",hat:"Chapeau",face:"Visage",top:"Habit",bg:"Fond"};
-const AV_NAMES={style:["Chauve","Courte","Longue","Chignon","Bouclée","Crête","Carré","Frange","Afro","Queue de cheval","Couettes","Rasée","Pics","Raie sur le côté","Au bol","Gominée","Tresse","Mi-long ondulé","Dégarni"],eyes:["Points","Ronds","Contents","Endormis","Amande","Fines (mono-paupière)","Kawaii","Étoiles","Cœurs","Spirales","Larmes","Écarquillés"],hat:["Aucun","Chapeau conique (斗笠)","Oreilles de panda","Oreilles de chat","Couronne","Bandeau rouge","Casquette","Cornes","Auréole","Fleur de cerisier","Baguettes à cheveux","Chapeau de mandarin","Bonnet","Oreilles de lapin","Couronne de fleurs"],face:["Aucun","Joues rosées","Taches de rousseur","Masque chirurgical","Moustaches de chat","Peinture d'opéra","Pansement","Étoile sur la joue","Point rouge","Cicatrice"],top:["T-shirt","Col mandarin (唐装)","Col croisé (hanfu)","Qipao","Costume-cravate","Capuche"],brows:["Droits","Arqués","Épais"],nose:["Petit","Rond","Pointu","Aucun"],mouth:["Sourire","Grand sourire","Neutre","En coin","Chat","Langue tirée","Surpris","Bisou","Dents","Triste"],glasses:["Aucune","Rondes","Carrées","Soleil","Cœurs","Étoiles","Monocle","Masque de nuit"],beard:["Aucune","Barbe de 3 jours","Bouc","Barbe pleine","Moustache de sage","Longue barbe de sage"]};
-function avSVG(a,px){a=Object.assign({},AV_DEF,a||{});const sk=AV_OPT.skin[a.skin],hc=AV_OPT.hair[a.hair],dk="#2b1d14",sh="rgba(0,0,0,.14)";let back="",front="";
+const AV_N={style:19,eyes:12,brows:3,nose:3,mouth:10,glasses:8,beard:6,hat:15,face:10,top:6,acc:8,pat:6,fr:6};
+const AV_DEF={skin:1,hair:0,style:1,eyes:1,brows:0,nose:0,mouth:0,glasses:0,beard:0,hat:0,face:0,top:0,acc:0,pat:0,fr:0,bg:1,clo:0};
+const AV_LAB={style:"Coupe",hair:"Cheveux",skin:"Peau",eyes:"Yeux",brows:"Sourcils",nose:"Nez",mouth:"Bouche",glasses:"Lunettes",beard:"Barbe",clo:"Couleur du haut",hat:"Chapeau",face:"Visage",top:"Habit",acc:"Accessoire",pat:"Motif de fond",fr:"Cadre",bg:"Fond"};
+const AV_NAMES={acc:["Aucun","Boucles d’oreilles","Casque audio","Écouteurs","Écharpe","Nœud papillon","Collier de perles","Piercings"],pat:["Uni","Pois","Rayures","Étoiles","Vagues","Bulles"],fr:["Aucun","Or","Rouge chinois","Dégradé","Néon","Double"],style:["Chauve","Courte","Longue","Chignon","Bouclée","Crête","Carré","Frange","Afro","Queue de cheval","Couettes","Rasée","Pics","Raie sur le côté","Au bol","Gominée","Tresse","Mi-long ondulé","Dégarni"],eyes:["Points","Ronds","Contents","Endormis","Amande","Fines (mono-paupière)","Kawaii","Étoiles","Cœurs","Spirales","Larmes","Écarquillés"],hat:["Aucun","Chapeau conique (斗笠)","Oreilles de panda","Oreilles de chat","Couronne","Bandeau rouge","Casquette","Cornes","Auréole","Fleur de cerisier","Baguettes à cheveux","Chapeau de mandarin","Bonnet","Oreilles de lapin","Couronne de fleurs"],face:["Aucun","Joues rosées","Taches de rousseur","Masque chirurgical","Moustaches de chat","Peinture d'opéra","Pansement","Étoile sur la joue","Point rouge","Cicatrice"],top:["T-shirt","Col mandarin (唐装)","Col croisé (hanfu)","Qipao","Costume-cravate","Capuche"],brows:["Droits","Arqués","Épais"],nose:["Petit","Rond","Pointu","Aucun"],mouth:["Sourire","Grand sourire","Neutre","En coin","Chat","Langue tirée","Surpris","Bisou","Dents","Triste"],glasses:["Aucune","Rondes","Carrées","Soleil","Cœurs","Étoiles","Monocle","Masque de nuit"],beard:["Aucune","Barbe de 3 jours","Bouc","Barbe pleine","Moustache de sage","Longue barbe de sage"]};
+function avSVG(a,px){a=Object.assign({},AV_DEF,a||{});const cc=k=>/^#[0-9a-f]{6}$/i.test(a[k+"C"]||"")?a[k+"C"]:AV_OPT[k][a[k]],sk=cc("skin"),hc=cc("hair"),bgc=cc("bg"),cloc=cc("clo"),dk="#2b1d14",sh="rgba(0,0,0,.14)";let back="",front="";
   const H=`fill="${hc}"`,cap=`<path d="M22 52C14 -2 86 -2 78 52C74 38 64 30 50 30C36 30 26 38 22 52Z" ${H}/>`,fringe=`<path d="M23 52C16 0 84 0 77 52C73 38 63 31 50 31C37 31 27 38 23 52Z" ${H}/>`;
   switch(a.style){
     case 1:front=fringe;break;
@@ -681,18 +691,47 @@ function avSVG(a,px){a=Object.assign({},AV_DEF,a||{});const sk=AV_OPT.skin[a.ski
     `<path d="M40 78L41 72Q50 77 59 72L60 78Q50 84 40 78Z" fill="rgba(0,0,0,.28)"/><path d="M50 80Q62 82 70 94" fill="none" stroke="#f4c20d" stroke-width="2.2"/><circle cx="54" cy="83" r="1.8" fill="#f4c20d"/><circle cx="61" cy="87" r="1.8" fill="#f4c20d"/><circle cx="67" cy="92" r="1.8" fill="#f4c20d"/>`,
     `<path d="M40 78L50 92L60 78Z" fill="#fff"/><path d="M48 80H52L54 96L50 100L46 96Z" fill="#c1121f"/><path d="M34 80L45 100M66 80L55 100" stroke="#1b1b1b" stroke-width="4"/>`,
     `<path d="M30 78Q50 98 70 78Q77 85 72 93Q50 105 28 93Q23 85 30 78Z" fill="rgba(0,0,0,.22)"/><path d="M46 90V100M54 90V100" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>`][a.top];
-  return `<svg class="avsvg" viewBox="0 0 100 100" width="${px}" height="${px}" role="img" aria-label="Ton avatar"><defs><clipPath id="avc${px}"><circle cx="50" cy="50" r="50"/></clipPath></defs><g clip-path="url(#avc${px})"><rect width="100" height="100" fill="${AV_OPT.bg[a.bg]}"/>${back}
-  <rect x="42" y="68" width="16" height="22" fill="${sk}"/><rect x="42" y="68" width="16" height="22" fill="${sh}"/><path d="M8 100C10 82 28 78 50 78C72 78 90 82 92 100Z" fill="${AV_OPT.clo[a.clo]}"/><path d="M40 78Q50 90 60 78" fill="${sk}"/>${topX}
-  <circle cx="25" cy="52" r="5" fill="${sk}"/><circle cx="75" cy="52" r="5" fill="${sk}"/><ellipse cx="50" cy="48" rx="25" ry="29" fill="${sk}"/>${beard}${nose}${mouth}${eye}${brow}${faceX}${gl}${front}${hat}</g></svg>`}
+  const patX=["",
+    [0,1,2,3,4].flatMap(r=>[0,1,2,3,4,5].map(c=>`<circle cx="${8+c*17+(r%2)*8}" cy="${8+r*22}" r="2.4" fill="#fff" opacity=".35"/>`)).join(""),
+    [0,1,2,3,4,5,6,7].map(i=>`<rect x="${i*16}" y="0" width="8" height="100" fill="#fff" opacity=".22"/>`).join(""),
+    [[14,16],[84,22],[22,52],[80,60],[50,10],[12,84],[88,86]].map(p=>`<path d="M${p[0]} ${p[1]-4}L${p[0]+1.2} ${p[1]-1.2}L${p[0]+4} ${p[1]}L${p[0]+1.2} ${p[1]+1.2}L${p[0]} ${p[1]+4}L${p[0]-1.2} ${p[1]+1.2}L${p[0]-4} ${p[1]}L${p[0]-1.2} ${p[1]-1.2}Z" fill="#fff" opacity=".7"/>`).join(""),
+    [0,1,2,3].map(i=>`<path d="M0 ${18+i*24}Q12 ${10+i*24} 25 ${18+i*24}T50 ${18+i*24}T75 ${18+i*24}T100 ${18+i*24}" fill="none" stroke="#fff" stroke-width="3" opacity=".3"/>`).join(""),
+    [[16,20,9],[84,30,12],[20,78,12],[86,82,8],[70,10,6]].map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="${p[2]}" fill="#fff" opacity=".28"/>`).join("")][a.pat];
+  const accX=["",
+    `<circle cx="25" cy="61" r="3.2" fill="#f4c20d" stroke="#b8860b" stroke-width=".8"/><circle cx="75" cy="61" r="3.2" fill="#f4c20d" stroke="#b8860b" stroke-width=".8"/>`,
+    `<path d="M22 54C19 2 81 2 78 54" fill="none" stroke="#2b2b33" stroke-width="5" stroke-linecap="round"/><rect x="15" y="44" width="10" height="20" rx="5" fill="#e63946"/><rect x="75" y="44" width="10" height="20" rx="5" fill="#e63946"/>`,
+    `<circle cx="27" cy="56" r="3" fill="#fff" stroke="#bbb" stroke-width=".8"/><circle cx="73" cy="56" r="3" fill="#fff" stroke="#bbb" stroke-width=".8"/><path d="M27 59Q26 80 38 92M73 59Q74 80 62 92" fill="none" stroke="#fff" stroke-width="1.4"/>`,
+    `<path d="M28 80Q50 94 72 80L74 92Q50 106 26 92Z" fill="#e63946"/><path d="M60 88L70 104L58 102Z" fill="#c1121f"/><path d="M34 84Q50 92 66 84" fill="none" stroke="#fff" stroke-width="1.2" opacity=".6"/>`,
+    `<path d="M50 83L40 78L40 90ZM50 83L60 78L60 90Z" fill="#c1121f"/><circle cx="50" cy="83" r="3" fill="#8b0000"/>`,
+    [30,34,38,42,46,50,54,58,62,66,70].map((x,i)=>`<circle cx="${x}" cy="${79+Math.sin(i/10*Math.PI)*8}" r="2.6" fill="#fff" stroke="#ddd" stroke-width=".6"/>`).join(""),
+    `<circle cx="54.5" cy="59" r="1.9" fill="none" stroke="#f4c20d" stroke-width="1"/><circle cx="66" cy="40" r="1.4" fill="#cfd8dc" stroke="#78909c" stroke-width=".5"/><circle cx="25" cy="58" r="1.4" fill="#f4c20d"/><circle cx="75" cy="58" r="1.4" fill="#f4c20d"/>`][a.acc];
+  const frX=["",
+    `<circle cx="50" cy="50" r="48" fill="none" stroke="#f4c20d" stroke-width="4"/>`,
+    `<circle cx="50" cy="50" r="48" fill="none" stroke="#e63946" stroke-width="4"/><circle cx="50" cy="50" r="44.5" fill="none" stroke="#f4c20d" stroke-width="1.2"/>`,
+    `<defs><linearGradient id="avg${px}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7b4fd1"/><stop offset=".5" stop-color="#ff5ea8"/><stop offset="1" stop-color="#ffb703"/></linearGradient></defs><circle cx="50" cy="50" r="48" fill="none" stroke="url(#avg${px})" stroke-width="4.5"/>`,
+    `<circle cx="50" cy="50" r="48" fill="none" stroke="#00e5ff" stroke-width="2.4"/><circle cx="50" cy="50" r="46" fill="none" stroke="#00e5ff" stroke-width="5" opacity=".25"/>`,
+    `<circle cx="50" cy="50" r="48.2" fill="none" stroke="#fff" stroke-width="3"/><circle cx="50" cy="50" r="45.5" fill="none" stroke="#0055a4" stroke-width="2"/>`][a.fr];
+  return `<svg class="avsvg" viewBox="0 0 100 100" width="${px}" height="${px}" role="img" aria-label="Ton avatar"><defs><clipPath id="avc${px}"><circle cx="50" cy="50" r="50"/></clipPath></defs><g clip-path="url(#avc${px})"><rect width="100" height="100" fill="${bgc}"/>${patX}${back}
+  <rect x="42" y="68" width="16" height="22" fill="${sk}"/><rect x="42" y="68" width="16" height="22" fill="${sh}"/><path d="M8 100C10 82 28 78 50 78C72 78 90 82 92 100Z" fill="${cloc}"/><path d="M40 78Q50 90 60 78" fill="${sk}"/>${topX}
+  <circle cx="25" cy="52" r="5" fill="${sk}"/><circle cx="75" cy="52" r="5" fill="${sk}"/><ellipse cx="50" cy="48" rx="25" ry="29" fill="${sk}"/>${beard}${nose}${mouth}${eye}${brow}${faceX}${gl}${front}${hat}${accX}</g>${frX}</svg>`}
 const avGet=()=>Object.assign({},AV_DEF,S.av||{});
 function avOpen(){closeSet();avDraw();document.getElementById("avp").classList.add("on")}
 function avClose(){document.getElementById("avp").classList.remove("on");if(cur)cur()}
-function avSet(k,v){const a=avGet(),n=AV_OPT[k]?AV_OPT[k].length:AV_N[k];a[k]=(v+n)%n;S.av=a;save();avDraw()}
-function avRand(){const a={};Object.keys(AV_DEF).forEach(k=>{const n=AV_OPT[k]?AV_OPT[k].length:AV_N[k];a[k]=Math.random()*n|0});S.av=a;save();avDraw()}
-function avDraw(){const a=avGet();document.getElementById("avprev").innerHTML=avSVG(a,128);
-  document.getElementById("avrows").innerHTML=["style","hair","hat","skin","eyes","brows","nose","mouth","face","glasses","beard","top","clo","bg"].map(k=>{
-    if(AV_OPT[k])return `<div class="avr"><span>${AV_LAB[k]}</span><span class="avsw">${AV_OPT[k].map((c,i)=>`<button type="button" aria-label="${AV_LAB[k]} ${i+1}" aria-pressed="${a[k]===i}" style="background:${c}" onclick="avSet('${k}',${i})"></button>`).join("")}</span></div>`;
-    return `<div class="avr"><span>${AV_LAB[k]}</span><span class="avst"><button type="button" aria-label="Précédent" onclick="avSet('${k}',${a[k]-1})">‹</button><b>${AV_NAMES[k][a[k]]}</b><button type="button" aria-label="Suivant" onclick="avSet('${k}',${a[k]+1})">›</button></span></div>`}).join("")}
+function avSet(k,v){const a=avGet(),n=AV_OPT[k]?AV_OPT[k].length:AV_N[k];a[k]=(v+n)%n;delete a[k+"C"];AVH.push(JSON.stringify(S.av||{}));S.av=a;save();avDraw()}
+function avCol(k,v){const a=avGet();AVH.push(JSON.stringify(S.av||{}));a[k+"C"]=v;S.av=a;save();avPrev()}
+function avUndo(){const p=AVH.pop();if(!p)return toast("Rien à annuler");S.av=JSON.parse(p);save();avDraw()}
+let AVH=[],AVT="style";
+function avRand(){const a={};AVH.push(JSON.stringify(S.av||{}));Object.keys(AV_DEF).forEach(k=>{const n=AV_OPT[k]?AV_OPT[k].length:AV_N[k];a[k]=Math.random()*n|0});S.av=a;save();avDraw()}
+const AV_TABS=[["style","💇","Coupe"],["hair","🎨","Cheveux"],["hat","🎩","Chapeau"],["skin","🧑","Peau"],["eyes","👁️","Yeux"],["brows","🤨","Sourcils"],["nose","👃","Nez"],["mouth","👄","Bouche"],["face","🎭","Visage"],["glasses","👓","Lunettes"],["beard","🧔","Barbe"],["top","👕","Habit"],["clo","🎽","Couleur"],["acc","💎","Accessoire"],["bg","🖼️","Fond"],["pat","✨","Motif"],["fr","⭕","Cadre"]];
+function avPrev(){const e=document.getElementById("avprev");if(e)e.innerHTML=avSVG(avGet(),132)}
+function avDraw(){const a=avGet(),k=AVT;avPrev();
+  document.getElementById("avtabs").innerHTML=AV_TABS.map(t=>`<div role="button" class="avt${k===t[0]?" on":""}" onclick="AVT='${t[0]}';avDraw()"><span>${t[1]}</span>${t[2]}</div>`).join("");
+  let h="";
+  if(AV_OPT[k]){const cur=/^#[0-9a-f]{6}$/i.test(a[k+"C"]||"")?a[k+"C"]:AV_OPT[k][a[k]];
+    h=`<div class="avsw2">${AV_OPT[k].map((c,i)=>`<button type="button" aria-label="${AV_LAB[k]} ${i+1}" aria-pressed="${!a[k+"C"]&&a[k]===i}" style="background:${c}" onclick="avSet('${k}',${i})"></button>`).join("")}</div>
+    <label class="avcu"><span>🎨 Couleur personnalisée</span><input type="color" value="${cur}" oninput="avCol('${k}',this.value)"></label>`}
+  else h=`<div class="avgrid">${AV_NAMES[k].map((n,i)=>`<div role="button" class="avc${a[k]===i?" on":""}" onclick="avSet('${k}',${i})">${avSVG(Object.assign({},a,{[k]:i}),64)}<small>${n}</small></div>`).join("")}</div>`;
+  document.getElementById("avrows").innerHTML=h}
 function dash(){const st=stats(),E=eta(st),L=lvOf(S.xp),lo=40*(L-1)**2,hi=40*L*L,p=Math.round(st.all);
   return `<div class="dash"><button type="button" class="avb" onclick="avOpen()" aria-label="Modifier mon avatar" title="Modifier mon avatar">${avSVG(S.av,72)}<i>✏️</i></button><div class="ring" style="--p:${st.all}"><span>${p}%</span></div><div class="dtx"><b>Niveau ${L}</b> · ⭐ ${S.xp} XP<div class="bar" style="height:7px"><i style="width:${(S.xp-lo)/(hi-lo)*100}%;background:var(--gold)"></i></div>
   <div class="goal"><span>🎯 Aujourd'hui : ${(S.day&&S.day.d===tdy())?S.day.n:0}/${goalDay()} mots</span><div class="bar" style="height:6px"><i style="width:${Math.min(100,((S.day&&S.day.d===tdy())?S.day.n:0)/goalDay()*100)}%;background:var(--ok)"></i></div></div><small>✅ ${st.done}/${st.n} chapitres validés · 📚 ${Math.round(st.tot-st.rem)}/${st.tot} acquis · 🔥 ${S.streak} j</small></div></div>${E?`<div class="eta" onclick="plan()">⏳ <b>${LV()} dans ${E.dur}</b> (${E.d} jours) · vers le ${E.date}<small>Rythme : ${E.rate} · touche pour changer</small></div>`:`<div class="eta">🎉 <b>Niveau ${LV()} atteint !</b></div>`}`}

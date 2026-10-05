@@ -47,7 +47,7 @@ function rank_main($k) {
     $S = json_decode(@file_get_contents($pf), true); if (!is_array($S)) continue;
     $words = 0; foreach (($S["known"] ?? []) as $a) { if (is_array($a)) $words += count($a); }
     $streak = (int)($S["streak"] ?? 0); if (($S["last"] ?? "") < $yday) $streak = 0;
-    $av = []; foreach (($S["av"] ?? []) as $ak => $av_v) { if (is_string($ak) && preg_match("/^[a-z]{2,8}$/", $ak) && is_int($av_v) && $av_v >= 0 && $av_v < 100 && count($av) < 20) $av[$ak] = $av_v; }
+    $av = []; foreach (($S["av"] ?? []) as $ak => $av_v) { if (!is_string($ak) || !preg_match("/^[a-zA-Z]{2,8}$/", $ak) || count($av) >= 30) continue; if (is_int($av_v) && $av_v >= 0 && $av_v < 100) $av[$ak] = $av_v; elseif (is_string($av_v) && preg_match("/^#[0-9a-fA-F]{6}$/", $av_v)) $av[$ak] = $av_v; }
     $isme = ($id === $h); if ($isme) $me = true;
     $out[] = ["name" => $r["name"], "xp" => (int)($S["xp"] ?? 0), "words" => $words, "streak" => $streak, "av" => $av, "me" => $isme];
   }
