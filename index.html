@@ -687,14 +687,18 @@ function bestVoice(){const g=S.vg||"m";return zhVoices().sort((a,b)=>voiceScore(
 function voiceLabel(){if((S.vg||"m")==="m"&&Object.keys(AMAP).length)return "🎙️ homme · Yunxi";const v=bestVoice(),g=S.vg||"m";if(!v)return "🎙️ aucune voix";const n=v.name.replace(/Microsoft |Online \(Natural\)|- Chinese.*|\(.*?\)/g,"").trim();const ok=g==="m"?MALE.test(v.name):FEMALE.test(v.name);return "🎙️ "+(g==="m"?"homme":"femme")+(ok?"":" ?")+" · "+n}
 let AUD=null,AMAP={};
 fetch("audio/map.json").then(r=>r.json()).then(m=>{AMAP=m;head()}).catch(()=>{});
-function say(t){const k=t.replace(/[?!]/g,"");
-  if((S.vg||"m")==="m"&&AMAP[k]){try{speechSynthesis.cancel();if(AUD)AUD.pause();const a=AUD=new Audio("audio/"+AMAP[k]);a.playbackRate=[.65,.85,1][S.sp??1];a.onerror=()=>sayTTS(t);a.play().catch(()=>sayTTS(t));return}catch(e){}}
-  sayTTS(t)}
+const AU=new Audio();let SAYTOK=0;
+function stopAudio(){SAYTOK++;try{speechSynthesis.cancel()}catch(e){}try{AU.onended=AU.onerror=null;AU.pause();AU.removeAttribute("src");AU.load()}catch(e){}}
+function say(t){const k=t.replace(/[?!]/g,"");stopAudio();const tok=SAYTOK;
+  if((S.vg||"m")==="m"&&AMAP[k]){try{AU.src="audio/"+AMAP[k];AU.playbackRate=[.65,.85,1][S.sp??1];AU.onerror=()=>{if(tok===SAYTOK)sayTTS(t,true)};const p=AU.play();if(p)p.catch(()=>{if(tok===SAYTOK)sayTTS(t,true)});return}catch(e){}}
+  sayTTS(t,true)}
 function setVoice(){S.vg=(S.vg||"m")==="m"?"f":"m";save();head();say("你好，我是你的中文老师")}
 speechSynthesis.onvoiceschanged=()=>{try{head()}catch(e){}};
 const RATES=[.5,.7,.9];
 function setSpeed(){S.sp=((S.sp??1)+1)%3;save();head()}
-function sayTTS(t){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t.replace(/[?!]/g,""));u.lang="zh-CN";u.rate=RATES[S.sp??1];const v=bestVoice();if(v)u.voice=v;speechSynthesis.speak(u)}catch(e){}}
+function sayTTS(t,fromSay){try{if(!fromSay)stopAudio();const tok=SAYTOK;const u=new SpeechSynthesisUtterance(t.replace(/[?!]/g,""));u.lang="zh-CN";u.rate=RATES[S.sp??1];const v=bestVoice();if(v)u.voice=v;setTimeout(()=>{if(tok===SAYTOK)speechSynthesis.speak(u)},60)}catch(e){}}
+function setDiff(){S.diff=S.diff==="hard"?"easy":"hard";save();qShow()}
+function diffBox(it){const b=strip(normP(it[1])).replace(/\s+/g,""),hard=S.diff==="hard";return `<div style="margin:6px 0">${hard?"":`<div style="font-size:1.4rem;letter-spacing:.15em;color:var(--blue,#0055a4);font-weight:700">${b[0]} ${"_ ".repeat(Math.max(0,b.length-1))}</div><small style="color:var(--mut)">💡 première lettre · ${b.length} lettres</small><br>`}<button class="alt" style="margin-top:6px" onclick="setDiff()">${hard?"🔥 Mode difficile · aucune lettre":"🌱 Mode facile · 1ʳᵉ lettre"} (changer)</button></div>`}
 let ac;function beep(ok){try{ac=ac||new AudioContext();const o=ac.createOscillator(),g=ac.createGain();o.connect(g);g.connect(ac.destination);o.frequency.value=ok?740:200;g.gain.value=.08;o.start();o.stop(ac.currentTime+.15)}catch(e){}}
 const vis=v=>v[0]==="#"?`<span class="sw" style="background:${v}"></span>`:`<div class="vis">${v}</div>`;
 const py=p=>S.py?`<div class="py">${p}</div>`:"";
@@ -1056,7 +1060,7 @@ function qShow(){if(Q.i>=Q.qs.length)return qEnd();Q.lock=0;clearTimeout(Q.tm);c
   else if(t==="b")p=`${vis(it[3])}<div class="fr">${it[2]}</div><p>Comment dit-on en chinois ?</p>`;
   else if(t==="c")p=`<div class="big">🎧</div>${spk}<p>Qu'as-tu entendu ? (le sens)</p>`;
   else if(t==="d")p=`<div class="big">✍️</div>${spk}<p>Dictée : quel mot as-tu entendu ? (choisis les caractères)</p>`;
-  else if(t==="p")p=`<div class="han">${it[0]}</div><div class="fr">${it[2]}</div><p>Écris le pinyin</p><input id="pin" class="srch" autocomplete="off" autocapitalize="none" placeholder="ex : ni3hao3 · nǐhǎo · nihao" onkeydown="if(event.key==='Enter')pinCheck()"><small style="color:var(--mut)">Avec les tons (chiffres 1-4 ou accents) = parfait. Sans les tons = accepté.</small><div class="nav"><button onclick="pinCheck()">Valider</button></div>`;
+  else if(t==="p")p=`<div class="han">${it[0]}</div><div class="fr">${it[2]}</div><p>Écris le pinyin</p>${diffBox(it)}<input id="pin" class="srch" autocomplete="off" autocapitalize="none" placeholder="ex : ni3hao3 · nǐhǎo · nihao" onkeydown="if(event.key==='Enter')pinCheck()"><small style="color:var(--mut)">Avec les tons (chiffres 1-4 ou accents) = parfait. Sans les tons = accepté.</small><div class="nav"><button onclick="pinCheck()">Valider</button></div>`;
   else if(t==="z")p=`<p class="fr">${q.fr}</p><div class="han big">${q.sentence}</div><p>Quel mot manque ?</p>`;
   else if(t==="n")p=`<div class="han">${q.w[0]}</div><div class="fr">${q.w[3]} ${q.w[2]}</div>${spk}<p>Quelle est la courbe de ton de ce mot ?</p>`;
   else if(t==="o")p=`<p class="fr">${q.fr}</p><p>🧩 Remets la phrase en ordre</p><div id="oq"></div>`;
