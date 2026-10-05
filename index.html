@@ -1348,7 +1348,7 @@ function buildLex(){LEXW={};const add=(h,p,f)=>{h=nk(h);if(!/^[一-鿿]+$/.test(
 const cshort=x=>x.length>40?x.slice(0,38)+"…":x;
 const cmean=x=>{const e=LEXW[x];return (e&&e.f[0])||COMPFR[x]||CHM[x]||""};
 function decompHTML(c){const d=DEC[c];if(!d)return HINT[c]?`<div class="dc">💡 ${HINT[c]}</div>`:"";const [cs,ty,se,ph]=d.split("|");
-  const parts=[...cs].map(x=>{const m=cmean(x),p=CPIN[x]||(LEXW[x]&&LEXW[x].p)||"";return `<span class="cm">${x}</span> ${m?cshort(m):p}${x===ph&&p?` <i>(son : ${p})</i>`:""}${x===se&&m?" <i>(sens)</i>":""}`});
+  const parts=[...cs].map(x=>{const m=cmean(x),p=CPIN[x]||(LEXW[x]&&LEXW[x].p)||"";return `<span class="cm">${x}</span>${p?` <span>${p}</span>`:""} ${m?cshort(m):""}${x===ph&&p?" <i>(son)</i>":""}${x===se&&m?" <i>(sens)</i>":""}`});
   return `<div class="dc">🧩 ${parts.join(" <b>+</b> ")}</div>`+(HINT[c]?`<div class="dc">💡 ${HINT[c]}</div>`:"")}
 function tipFor(wd){const e=LEXW[wd];let h;
   if(e)h=`<b>${wd}</b> <span>${e.p}</span><div>${e.f.slice(0,2).join(" · ")}</div>`;
@@ -1383,6 +1383,10 @@ function pyChar(el,hz,pos){const t=el.textContent,L=[];[...t].forEach((c,i)=>{if
     rg.push([L[c][0],L[c+e.length-1][0]]);c+=e.length}
   return rg.findIndex(z=>pos>=z[0]&&pos<=z[1])}
 const isPh=w=>{const e=LEXW[w];return !!e&&[...w].length>1&&e.f.some(x=>/…|^(Je |J'|Tu |Aidez|C'est |Comment ça va|Super|Combien ça)/.test(x))};
+const VOW="aeiouüāáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ",SYLRE=new RegExp("(?:zh|ch|sh|[bpmfdtnlgkhjqxrzcsyw])?["+VOW+"]+(?:ng|n(?!["+VOW+"])|r(?!$))?","gi");
+function sylOf(w,j,e,pin){const c=[...w][j],p=e&&e.p?e.p.replace(/[?!…。，,]/g,"").trim():"";
+  if(p){let t=p.split(/[\s·]+/).filter(Boolean);if(t.length!==[...w].length)t=p.match(SYLRE)||[];if(t.length===[...w].length)return t[j]}
+  return pin(c)}
 function startTips(){const tip=document.createElement("div");tip.id="tip";document.body.appendChild(tip);let last="";
   const place=(x,y)=>{const r=tip.getBoundingClientRect();tip.style.left=Math.max(6,Math.min(x+14,innerWidth-r.width-6))+"px";tip.style.top=(y+18+r.height>innerHeight?Math.max(6,y-r.height-12):y+18)+"px"};
   const hide=()=>{tip.style.display="none";last=""};
@@ -1393,7 +1397,7 @@ function startTips(){const tip=document.createElement("div");tip.id="tip";docume
     const a=[...wd],ch=a[Math.max(0,Math.min(idx,a.length-1))],key=wd+"|"+ch;if(key===last&&tip.style.display==="block")return place(x,y);last=key;
     const e=LEXW[wd],pin=c=>(LEXW[c]&&LEXW[c].p)||PINMAP[c]||CPIN[c]||"",sh=m=>cshort(m.split(/ ;|,| \(/)[0].trim());
     if(a.length>1){html=`<b>${wd}</b> <span>${e?e.p:a.map(pin).join(" ")}</span>${e&&e.f.length?`<div>${e.f.slice(0,2).join(" · ")}</div>`:""}`+
-      `<div class="tp">🔗 ${a.map((c,j)=>`<b class="cm">${c}</b> ${partM(wd,j,c,pin)}`).join(" <b>+</b> ")}${e&&e.f[0]?` → <i>${cshort(sh(e.f[0]))}</i>`:""}${COMBO[wd]&&COMBO[wd].n?`<div class="dc">ℹ️ ${COMBO[wd].n}</div>`:""}</div>`+
+      `<div class="tp">🔗 ${a.map((c,j)=>`<b class="cm">${c}</b> <span>${sylOf(wd,j,e,pin)}</span> ${partM(wd,j,c,pin)}`).join(" <b>+</b> ")}${e&&e.f[0]?` → <i>${cshort(sh(e.f[0]))}</i>`:""}${COMBO[wd]&&COMBO[wd].n?`<div class="dc">ℹ️ ${COMBO[wd].n}</div>`:""}</div>`+
       `<div class="tp"><b class="cm">${ch}</b> ${pin(ch)} · ${cmean(ch)?cshort(cmean(ch)):""}${decompHTML(ch)}</div>`}
     else html=tipFor(ch);
     tip.innerHTML=html;tip.style.display="block";place(x,y)};
