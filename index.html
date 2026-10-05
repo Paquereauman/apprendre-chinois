@@ -795,8 +795,8 @@ const STEPS_A1=[["Prononciation",["m:pinyin"]],
 ["Quel jour on est ?",["temps","dates","m:gl-A1-13"]],
 ["Je m'habille aujourd'hui",["vetements","m:gl-A1-6","pronoms","couleurs","corps"]],
 ["Ma vie : famille, animaux, loisirs",["famille","animaux","loisirs"]],
-["Voyager",["train","taxi","hotel","chemin","lieux","habitat"]],
-["Vie quotidienne",["resto","courses","marche","medecin","telephone"]],
+["Voyager",["taxi","hotel","chemin","lieux","habitat"]],
+["Vie quotidienne",["resto","plats","courses","marche","medecin","telephone"]],
 ["Apprendre & lire",["classe","verbes","m:chars"]]];
 const steps=()=>LV()==="B1"?STEPS_B1:LV()==="A2"?STEPS_A2:STEPS_A1;
 const NEXTLV={A1:"A2",A2:"B1"},LVLAB={A1:"🌱 Niveau A1",A2:"🌿 Niveau A2",B1:"🌳 Niveau B1"};
@@ -1297,9 +1297,9 @@ function trace(){if(!W)return;const m=document.getElementById("hwmsg");m.textCon
 // ---- Niveau A2
 const STEPS_A2=[["Passé, futur & temps",["tps2","m:gl-A2-1","m:gl-A2-2","m:gl-A2-3","m:gl-A2-4","m:gl-A2-6"]],
 ["Parler de soi et des autres",["routine","descrip","m:gl-A2-0","m:gl-A2-5","m:gl-A2-15","senti","m:gl-A2-13","invit","m:gl-A2-12","metiers"]],
-["Vie quotidienne",["maison","nourri","plats","table","ustensiles","shop2","sante2","m:gl-A2-14","urgences"]],
+["Vie quotidienne",["maison","nourri","table","ustensiles","shop2","sante2","m:gl-A2-14","urgences"]],
 ["Découvrir le monde",["pays","meteo","envir2","m:gl-A2-9"]],
-["Voyager",["transp","m:gl-A2-11","tourisme"]],
+["Voyager",["transp","train","m:gl-A2-11","tourisme"]],
 ["Étudier, travailler & verbes",["etudes","m:gl-A2-7","m:gl-A2-8","m:gl-A2-10","verbes2"]]];
 const GRAM2=[
 ["Comparer : 比","A <b>比</b> B + adjectif. Pour dire « moins que » : A <b>没有</b> B + adjectif.",[["他/比/我/高","Tā bǐ wǒ gāo.","Il est plus grand que moi."],["今天/比/昨天/冷","Jīntiān bǐ zuótiān lěng.","Aujourd'hui il fait plus froid qu'hier."],["我/没有/他/高","Wǒ méiyǒu tā gāo.","Je suis moins grand que lui."]]],
