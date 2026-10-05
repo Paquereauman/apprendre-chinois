@@ -40,7 +40,7 @@
 
 | Niveau | Thèmes | Vocabulaire | Grammaire |
 |---|---|---|---|
-| **A1** | 28 (salutations, restaurant, train, taxi, médecin, nombres, famille, corps…) | ~420 mots | 15 leçons + pinyin & tons |
+| **A1** | 28 (salutations, restaurant, train, taxi, médecin, nombres, famille…) | ~420 mots | 15 leçons + pinyin & tons |
 | **A2** | 17 (routine, sentiments, shopping, santé, transports, urgences, pays…) | ~265 mots | 16 leçons |
 | **B1** | 14 (connecteurs, opinions, travail, banque, environnement, fêtes, cuisine…) | ~225 mots | 16 leçons |
 
