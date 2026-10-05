@@ -1063,7 +1063,7 @@ function testStart(k){cat=null;cur=null;const qs=[];
   levelCats().forEach(c=>shuffle(c.items).slice(0,k||1).forEach(it=>{const a=shuffle(typesFor(it));qs.push(mkQ(it,c.items,a[0],c),mkQ(it,c.items,a[1],c))}));
   shuffle(qs);const part2=qs.length;qs.push(mkCloze(),mkCloze(),mkOrder(),mkOrder(),mkTone(),mkTone());
   Q={qs,i:0,s:0,mode:"test",part2,nw:0};qShow()}
-const optLab=(q,o)=>q.t==="b"?`<span style="font-size:1.5rem">${o[0]}</span>${py(o[1]).replace("div","small").replace("/div","/small")}`:q.t==="d"?`<span style="font-size:1.7rem">${o[0]}</span>`:q.t==="z"?`<span style="font-size:1.6rem">${o}</span>`:q.t==="n"?`<span style="display:inline-flex">${tsvg(o[0],null,60)}${tsvg(o[1],null,60)}</span><small>${patPin(q.w,o)}</small>`:o[2];
+const optLab=(q,o)=>q.t==="b"?`<span style="font-size:1.5rem">${o[0]}</span>${py(o[1]).replace("div","small").replace("/div","/small")}`:q.t==="d"?`<span style="font-size:1.7rem">${o[0]}</span>${py(o[1]).replace("div","small").replace("/div","/small")}`:q.t==="z"?`<span style="font-size:1.6rem">${o}</span>${(S.py&&(LEXW||(buildLex(),LEXW))[o])?`<small class="py2" style="display:block">${LEXW[o].p}</small>`:""}`:q.t==="n"?`<span style="display:inline-flex">${tsvg(o[0],null,60)}${tsvg(o[1],null,60)}</span><small>${patPin(q.w,o)}</small>`:o[2];
 function qShow(){if(Q.i>=Q.qs.length)return qEnd();Q.lock=0;clearTimeout(Q.tm);const q=Q.qs[Q.i],t=q.t,it=q.it;let p="",opts="";
   const spk=`<button class="speak" onclick="say('${(q.say||"").replace(/'/g,"\\'").replace(/[?!]/g,"")}')">🔊 Écouter</button>`;
   if(t==="a")p=`<div class="han">${it[0]}</div>${py(it[1])}<p>Que signifie ce mot ?</p>`;
