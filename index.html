@@ -727,11 +727,11 @@ function know2(cid,h,el){const was=(S.known[cid]||[]).some(x=>nk(x)===nk(h));con
 // ---- Parcours A1 (ordre logique)
 const MODS={pinyin:{name:"Pinyin & tons",icon:"🔊",color:"#e63946",fn:"pinyin",n:20},gram:{name:"Grammaire de base",icon:"🧱",color:"#f77f00",fn:"gram",n:15},gram3:{name:"Grammaire B1",icon:"🧠",color:"#7209b7",fn:"gram3",n:16},gram2:{name:"Grammaire A2",icon:"🧩",color:"#f77f00",fn:"gram2",n:16},chars:{name:"Comprendre les caractères",icon:"🈶",color:"#9b5de5",fn:"chars",n:30}};
 const LV=()=>S.lvl||"A1";
-const STEPS_A1=[
-["Prononciation",["m:pinyin"]],
-["Premiers mots",["salut","presente","pronoms","nombres"]],
-["Construire des phrases",["m:gram","interro","classif","adjectifs"]],
-["Quel jour on est ?",["temps","dates"]],
+const STEPS_A1=[["Prononciation",["m:pinyin"]],
+["Premiers mots",["salut","m:gl-A1-14","presente","m:gl-A1-0","m:gl-A1-1","pronoms","m:gl-A1-6","m:gl-A1-7","nombres"]],
+["Construire des phrases",["m:gl-A1-2","adjectifs","m:gl-A1-3","m:gl-A1-4","interro","m:gl-A1-5"]],
+["Dire ce qu'on a et ce qu'on fait",["m:gl-A1-12","m:gl-A1-11","classif","m:gl-A1-10","m:gl-A1-9","m:gl-A1-8"]],
+["Quel jour on est ?",["temps","dates","m:gl-A1-13"]],
 ["Je m'habille aujourd'hui",["vetements","couleurs","corps"]],
 ["Ma vie : famille, animaux, loisirs",["famille","animaux","loisirs"]],
 ["Voyager",["train","taxi","hotel","chemin","lieux","habitat"]],
@@ -742,9 +742,11 @@ const NEXTLV={A1:"A2",A2:"B1"},LVLAB={A1:"🌱 Niveau A1",A2:"🌿 Niveau A2",B1
 const flatIds=()=>steps().flatMap(s=>s[1]);
 const levelCats=()=>ALL().filter(u=>!u.mod);
 function setLvl(l){S.lvl=l;save();head();home()}
-const unit=id=>id.startsWith("m:")?{id,mod:true,...MODS[id.slice(2)],items:{length:MODS[id.slice(2)].n}}:CATS.find(c=>c.id===id);
+const GLV={A1:{G:()=>GRAM,K:"g",icon:"🧱",color:"#f77f00",lab:"Grammaire A1"},A2:{G:()=>GRAM2,K:"g2",icon:"🧩",color:"#e76f51",lab:"Grammaire A2"},B1:{G:()=>GRAM3,K:"g3",icon:"🧠",color:"#7209b7",lab:"Grammaire B1"}};
+const glParse=id=>{const m=/^m:gl-(A1|A2|B1)-(\d+)$/.exec(id);return m?{lv:m[1],i:+m[2]}:null};
+const unit=id=>glParse(id)?(p=>({id,mod:true,gl:p,name:GLV[p.lv].G()[p.i][0],icon:GLV[p.lv].icon,color:GLV[p.lv].color,n:1,items:{length:1}}))(glParse(id)):id.startsWith("m:")?{id,mod:true,...MODS[id.slice(2)],items:{length:MODS[id.slice(2)].n}}:CATS.find(c=>c.id===id);
 const ALL=()=>flatIds().map(unit);
-function modMastery(id){const m=id.slice(2),v=S.mod||{};
+function modMastery(id){const m=id.slice(2),v=S.mod||{};const p=glParse(id);if(p)return ((v[GLV[p.lv].K]||{})[p.i])?100:0;
   if(m==="pinyin")return (((v.pv||[]).length/4*100)+(v.pq||0))/2;
   if(m==="gram3")return Object.keys(v.g3||{}).filter(k=>v.g3[k]).length/GRAM3.length*100;
   if(m==="gram2")return Object.keys(v.g2||{}).filter(k=>v.g2[k]).length/GRAM2.length*100;
@@ -767,7 +769,7 @@ function prioCard(){const pu=prioUnits();if(!pu.length)return "";
 function syncBanner(){if(S.xp||wordsIn(S)||S.dismissSync)return "";return `<div class="q" style="text-align:left;margin-bottom:8px;padding:8px 12px;display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px"><div style="flex:1 1 280px"><b>👤 Tu as déjà un profil ?</b><br><small style="color:var(--mut)">Connecte-toi pour retrouver ta progression, ou crée un compte.</small></div><div class="nav" style="margin:0;justify-content:flex-start"><button onclick="profOpen()">👤 Me connecter / créer un profil</button><button class="alt" onclick="S.dismissSync=1;save();home()">Non, c'est nouveau</button></div></div>`}
 function revCard(){const n=dueItems().length;if(n)return `<div class="cat next" style="--c:#2bb673" onclick="revStart()"><div class="ic">🔁</div><b>Révision du jour : ${n} mot${n>1?"s":""}</b><small>Révise avant d'oublier (répétition espacée)</small></div>`;
   return Object.keys(S.rev||{}).length?`<div class="eta ok" style="cursor:default">✅ Aucune révision à faire aujourd'hui</div>`:""}
-function openAny(id){if(id.startsWith("m:"))window[MODS[id.slice(2)].fn]();else openCat(id)}
+function openAny(id){const p=glParse(id);if(p)return gLesson(p.lv,p.i);if(id.startsWith("m:"))window[MODS[id.slice(2)].fn]();else openCat(id)}
 function nextUnit(){return prioUnits().find(u=>mastery(u)<60)||ALL().find(u=>mastery(u)<60)}
 function stepCard(id){const c=unit(id),m=mastery(c);
   return `<div class="cat" style="--c:${c.color}" onclick="openAny('${id}')"><div class="ic">${c.icon}</div><b>${isPrio(id)?"⭐ ":""}${c.name}</b><small>${m>=85?"✅ Acquis":Math.round(m)+" %"}</small><div class="bar"><i style="width:${m}%"></i></div></div>`}
@@ -911,18 +913,23 @@ const GRAM=[
 ["Heure et date","Du plus grand au plus petit ; le moment se place avant le verbe.",[["现在/三/点","Xiànzài sān diǎn.","Il est trois heures."],["今天/星期/五","Jīntiān xīngqī wǔ.","Aujourd'hui c'est vendredi."],["我/星期六/去/上海","Wǒ xīngqīliù qù Shànghǎi.","Samedi, je vais à Shanghai."]]],
 ["Politesse : 请","请 + verbe = « s'il vous plaît ». 请问 = « excusez-moi, puis-je demander… ».",[["请/给/我/水","Qǐng gěi wǒ shuǐ.","Donnez-moi de l'eau, s'il vous plaît."],["请问/厕所/在/哪里","Qǐngwèn, cèsuǒ zài nǎlǐ?","Excusez-moi, où sont les toilettes ?"]]]];
 const exHTML=e=>{const t=e[0].replace(/\//g,"");return `<div class="ex" data-fr="${e[2]}" onclick="say('${t.replace(/[?]/g,"")}')">🔊 ${t}${S.py?`<div class="py2">${e[1]}</div>`:""}<div>${e[2]}</div></div>`};
-let GL="A1";
-function gram(l){cur=gram;GL=l||"A1";const A=GL==="A2",B=GL==="B1",GR=B?GRAM3:A?GRAM2:GRAM,K=B?"g3":A?"g2":"g",g=(S.mod=S.mod||{})[K]=S.mod[K]||{};
+let GL="A1",GLS=null;
+function gram(l){cur=gram;GLS=null;GL=l||"A1";const A=GL==="A2",B=GL==="B1",GR=B?GRAM3:A?GRAM2:GRAM,K=B?"g3":A?"g2":"g",g=(S.mod=S.mod||{})[K]=S.mod[K]||{};
   $.innerHTML=`<h2>${B?"🧠 Grammaire B1":A?"🧩 Grammaire A2":"🧱 Grammaire de base"}</h2><p style="color:var(--mut)">${Object.keys(g).filter(k=>g[k]).length}/${GR.length} leçons comprises. Touche les phrases pour les écouter.</p>
   <div class="tabs"><button onclick="sentence()">🧩 Exercice : remets la phrase en ordre</button><button class="alt" onclick="resetUnit('m:${B?"gram3":A?"gram2":"gram"}')">🔄 Réinitialiser</button></div>
   ${GR.map((l,i)=>`<details class="q" style="text-align:left;margin-bottom:8px"><summary style="font-weight:700;cursor:pointer">${g[i]?"✅ ":""}${i+1}. ${l[0]}</summary><p style="line-height:1.5">${l[1]}</p>${l[2].map(exHTML).join("")}<div class="nav" style="justify-content:flex-start"><button class="${g[i]?"on":"alt"}" onclick="gDone(${i})">${g[i]?"✅ Compris":"👍 J'ai compris"}</button></div></details>`).join("")}`}
+function gLesson(lv,i){cur=()=>gLesson(lv,i);GL=lv;GLS=i;const D=GLV[lv],l=D.G()[i],g=(S.mod=S.mod||{})[D.K]=S.mod[D.K]||{},ok=!!g[i],can=l[2].some(e=>e[0].split("/").length>=3);
+  $.innerHTML=`<div class="tabs"><button class="alt" onclick="home()">← Parcours</button></div><h2>${D.icon} ${l[0]}</h2><p style="color:var(--mut);margin-top:0">${D.lab} · leçon ${i+1}/${D.G().length}${ok?" · ✅ comprise":""}. Touche les phrases pour les écouter.</p>
+  <div class="q" style="text-align:left"><p style="line-height:1.6;margin-top:0">${l[1]}</p>${l[2].map(exHTML).join("")}</div>
+  <div class="tabs">${can?`<button onclick="sentence()">🧩 Exercice : remets la phrase en ordre</button>`:""}<button class="${ok?"alt":""}" onclick="gLDone('${lv}',${i})">${ok?"↩️ Marquer comme non comprise":"👍 J'ai compris"}</button></div>`}
+function gLDone(lv,i){const D=GLV[lv],g=S.mod[D.K],id="m:gl-"+lv+"-"+i;g[i]=!g[i];if(g[i])addXp(5);save();gLesson(lv,i);if(g[i]){burst(innerWidth/2,innerHeight*.5,26);toast("✅ Leçon validée !");checkDone(id)}}
 function gDone(i){const A=GL==="A2",B=GL==="B1",g=S.mod[B?"g3":A?"g2":"g"];g[i]=!g[i];if(g[i])addXp(5);save();const wasOn=g[i];const o=[...document.querySelectorAll("details")].map(d=>d.open);gram(GL);document.querySelectorAll("details").forEach((d,k)=>d.open=o[k]);if(wasOn){burst(innerWidth/2,innerHeight*.5,26);toast("✅ Leçon validée !");checkDone(B?'m:gram3':A?'m:gram2':'m:gram')}}
 let SE;
 function sentence(){cur=sentence;
-  const all=(GL==="B1"?GRAM3:GL==="A2"?GRAM2:GRAM).flatMap(l=>l[2]).filter(e=>e[0].split("/").length>=3);const e=all[Math.random()*all.length|0];
+  const all=(GLS!=null?GLV[GL].G()[GLS][2]:(GL==="B1"?GRAM3:GL==="A2"?GRAM2:GRAM).flatMap(l=>l[2])).filter(e=>e[0].split("/").length>=3);const e=all[Math.random()*all.length|0];
   SE={w:e[0].split("/"),pick:[],e};SE.bank=shuffle(SE.w.map((x,i)=>({x,i})));seDraw()}
 function seDraw(){const done=SE.pick.length===SE.w.length;
-  $.innerHTML=`<div class="tabs"><button class="alt" onclick="gram(GL)">← Grammaire</button></div><div class="q"><h3>🧩 Remets la phrase en ordre</h3><p class="fr">${SE.e[2]}</p>
+  $.innerHTML=`<div class="tabs"><button class="alt" onclick="${GLS!=null?`gLesson(GL,GLS)`:`gram(GL)`}">← ${GLS!=null?"Leçon":"Grammaire"}</button></div><div class="q"><h3>🧩 Remets la phrase en ordre</h3><p class="fr">${SE.e[2]}</p>
   <div class="seq">${SE.pick.map(p=>`<span class="chip on" onclick="seUndo(${p.i})">${p.x}</span>`).join("")||"<small style='color:var(--mut)'>Touche les mots dans l'ordre…</small>"}</div>
   <div class="seq">${SE.bank.filter(b=>!SE.pick.includes(b)).map(b=>`<span class="chip" onclick="sePick(${b.i})">${b.x}</span>`).join("")}</div>
   ${done?`<p style="font-size:1.1rem"><b>${SE.pick.every((p,k)=>p.i===k)?"✅ Bravo !":"❌ Pas tout à fait."}</b><br><span class="py2">${SE.e[1]}</span><br>${SE.w.join("")}</p><div class="nav"><button class="speak" onclick="say('${SE.w.join("").replace(/[?]/g,"")}')">🔊</button><button onclick="sentence()">Suivant ▶</button></div>`:""}</div>`;
@@ -1221,13 +1228,12 @@ function trace(){if(!W)return;const m=document.getElementById("hwmsg");m.textCon
   W.quiz({onComplete:r=>{m.textContent="🎉 Bravo ! Erreurs : "+r.totalMistakes;beep(1);addXp(Math.max(3,10-r.totalMistakes))}})}
 
 // ---- Niveau A2
-const STEPS_A2=[
-["Grammaire A2",["m:gram2","tps2"]],
-["Parler de soi et des autres",["routine","descrip","senti","invit","metiers"]],
-["Vie quotidienne",["maison","nourri","shop2","sante2","urgences"]],
-["Découvrir le monde",["pays","meteo"]],
-["Voyager",["transp","tourisme"]],
-["Étudier, travailler & verbes",["etudes","verbes2"]]];
+const STEPS_A2=[["Passé, futur & temps",["tps2","m:gl-A2-1","m:gl-A2-2","m:gl-A2-3","m:gl-A2-4","m:gl-A2-6"]],
+["Parler de soi et des autres",["routine","descrip","m:gl-A2-0","m:gl-A2-5","m:gl-A2-15","senti","m:gl-A2-13","invit","m:gl-A2-12","metiers"]],
+["Vie quotidienne",["maison","nourri","shop2","sante2","m:gl-A2-14","urgences"]],
+["Découvrir le monde",["pays","meteo","m:gl-A2-9"]],
+["Voyager",["transp","m:gl-A2-11","tourisme"]],
+["Étudier, travailler & verbes",["etudes","m:gl-A2-7","m:gl-A2-8","m:gl-A2-10","verbes2"]]];
 const GRAM2=[
 ["Comparer : 比","A <b>比</b> B + adjectif. Pour dire « moins que » : A <b>没有</b> B + adjectif.",[["他/比/我/高","Tā bǐ wǒ gāo.","Il est plus grand que moi."],["今天/比/昨天/冷","Jīntiān bǐ zuótiān lěng.","Aujourd'hui il fait plus froid qu'hier."],["我/没有/他/高","Wǒ méiyǒu tā gāo.","Je suis moins grand que lui."]]],
 ["Avoir déjà fait : 过","Verbe + <b>过</b> = on a déjà vécu cette expérience. Négation : 没 + verbe + 过.",[["我/去/过/中国","Wǒ qù guo Zhōngguó.","Je suis déjà allé en Chine."],["你/吃/过/饺子/吗","Nǐ chī guo jiǎozi ma?","As-tu déjà mangé des raviolis ?"],["我/没/去/过/北京","Wǒ méi qù guo Běijīng.","Je ne suis jamais allé à Pékin."]]],
@@ -1412,12 +1418,11 @@ function startTips(){const tip=document.createElement("div");tip.id="tip";docume
   let raf=0;new MutationObserver(()=>{if(ANN)return;cancelAnimationFrame(raf);raf=requestAnimationFrame(annotate)}).observe(document.getElementById("app"),{childList:true,subtree:true});annotate()}
 
 // ---- Niveau B1
-const STEPS_B1=[
-["Grammaire B1",["m:gram3","conn"]],
-["Donner son avis & les relations",["opin","rel"]],
-["Travail & vie pratique",["travail","banque","probleme","techno"]],
-["Santé, ville & environnement",["sante3","envir"]],
-["Culture & traditions",["fetes","cuisine","geo","loisirs2"]],
+const STEPS_B1=[["Connecteurs & structures",["conn","m:gl-B1-5","m:gl-B1-6","m:gl-B1-3","m:gl-B1-4","m:gl-B1-13"]],
+["Donner son avis & les relations",["opin","m:gl-B1-11","m:gl-B1-7","m:gl-B1-15","rel","m:gl-B1-10"]],
+["Travail & vie pratique",["travail","banque","probleme","m:gl-B1-0","m:gl-B1-1","techno","m:gl-B1-9","m:gl-B1-8"]],
+["Santé, ville & environnement",["sante3","envir","m:gl-B1-2"]],
+["Culture & traditions",["fetes","cuisine","geo","loisirs2","m:gl-B1-12","m:gl-B1-14"]],
 ["Verbes B1",["verbes3"]]];
 const GRAM3=[
 ["La structure 把","<b>把</b> place l'objet <b>avant</b> le verbe pour dire ce qu'on fait de cet objet. Le verbe est suivi d'un résultat (上, 完, 在…).",[["请/把/门/关/上","Qǐng bǎ mén guān shàng.","Fermez la porte, s'il vous plaît."],["我/把/书/放/在/桌子/上","Wǒ bǎ shū fàng zài zhuōzi shàng.","Je pose le livre sur la table."],["他/把/作业/做/完/了","Tā bǎ zuòyè zuò wán le.","Il a fini ses devoirs."]]],
@@ -1509,7 +1514,7 @@ function plan(){cur=plan;head();
   <div class="q pc" style="text-align:left;margin:14px 0"><b>👤 Profil</b><br><small style="color:var(--mut)">${PNAME?"Connecté : <b style=\"color:var(--ink)\">"+PNAME.replace(/</g,"&lt;")+"</b>. Ta progression est enregistrée sur le serveur et retrouvée sur tous tes appareils.":"Pas de profil : ta progression n'est liée qu'à ce navigateur. Crée un profil (nom + mot de passe) pour la retrouver partout."}</small><div class="nav" style="justify-content:flex-start"><button class="alt" onclick="profOpen()">${PNAME?"🔁 Changer de profil":"👤 Créer / se connecter"}</button>${PNAME?'<button class="alt" onclick="profOut()">🚪 Se déconnecter</button>':""}</div></div><div class="tabs"><button class="alt" onclick="resetAll()">🔄 Tout réinitialiser</button></div><h3>Ton parcours (dans l'ordre conseillé)</h3>
   ${rows.map(({c,m,rem})=>{const [l,col]=lvl(m);return `<div class="row" onclick="openAny('${c.id}')"><div class="rv">${c.icon}</div><div class="rt"><b style="font-size:.95rem">${isPrio(c.id)?"⭐ ":""}${c.name}</b><div class="bar" style="height:5px"><i style="width:${m}%;background:${col}"></i></div></div><div style="text-align:right;font-size:.75rem"><b style="color:${col}">${l}</b><br>${Math.round(m)} % · ${rem>=.5?"~"+Math.ceil(rem)+" restants":"✔"}</div></div>`}).join("")}`}
 function resetUnit(id){const c=unit(id);if(!confirm("Réinitialiser « "+c.name+" » ? Ta progression de ce chapitre sera effacée."))return;
-  if(c.mod){const v=S.mod=S.mod||{},m=id.slice(2);if(m==="pinyin"){v.pv=[];v.pq=0}else if(m==="gram")v.g={};else if(m==="gram2")v.g2={};else if(m==="gram3")v.g3={};else S.cs=[]}
+  if(c.mod){const v=S.mod=S.mod||{},m=id.slice(2),gp=glParse(id);if(gp){(v[GLV[gp.lv].K]=v[GLV[gp.lv].K]||{})[gp.i]=false}else if(m==="pinyin"){v.pv=[];v.pq=0}else if(m==="gram")v.g={};else if(m==="gram2")v.g2={};else if(m==="gram3")v.g3={};else S.cs=[]}
   else{S.known[id]=[];delete S.best[id];if(S.test)delete S.test[id]}if(S.done)delete S.done[id];S.epoch=(S.epoch||0)+1;
   save();head();if(c.mod)openAny(id);else menu()}
 function resetAll(){if(!confirm("Tout réinitialiser ? Mots connus, scores, tests, grammaire, pinyin et caractères seront effacés (tes XP sont conservés)."))return;
@@ -1517,7 +1522,7 @@ function resetAll(){if(!confirm("Tout réinitialiser ? Mots connus, scores, test
 function setCrumb(p){const c=document.getElementById("crumb");c.style.display=p.length?"block":"none";c.innerHTML=p.map(([t,f])=>f?`<a onclick="${f}()">${t}</a>`:`<b>${t}</b>`).join(" › ");window.scrollTo(0,0)}
 const T=["🏠 Parcours","home"],C=()=>[cat.icon+" "+cat.name,"menu"];
 Object.entries({home:()=>[],menu:()=>[T,[cat.name]],list:()=>[T,C(),["Liste"]],cards:()=>[T,C(),["Cartes"]],quiz:()=>[T,C(),["Quiz"]],match:()=>[T,C(),["Association"]],
- nuances:()=>[T,C(),["Nuances"]],chars:()=>[T,["Caractères"]],chDetail:i=>[T,["Caractères","chars"],[CH[i][0]]],search:()=>[T,["Recherche"]],plan:()=>[T,["Mon plan "+LV()]],pinyin:()=>[T,["Pinyin & tons"]],gram:()=>[T,["Grammaire"]],sentence:()=>[T,["Grammaire","gram"],["Exercice"],["我听不懂","wǒ tīng bu dǒng","Je ne comprends pas","🙉"]]}).forEach(([n,cr])=>{const f=window[n];window[n]=function(...a){f.apply(this,a);setCrumb(cr(...a))}});
+ nuances:()=>[T,C(),["Nuances"]],chars:()=>[T,["Caractères"]],chDetail:i=>[T,["Caractères","chars"],[CH[i][0]]],search:()=>[T,["Recherche"]],plan:()=>[T,["Mon plan "+LV()]],pinyin:()=>[T,["Pinyin & tons"]],gram:()=>[T,["Grammaire"]],gLesson:()=>[T,["Leçon de grammaire"]],sentence:()=>[T,["Grammaire","gram"],["Exercice"],["我听不懂","wǒ tīng bu dǒng","Je ne comprends pas","🙉"]]}).forEach(([n,cr])=>{const f=window[n];window[n]=function(...a){f.apply(this,a);setCrumb(cr(...a))}});
 buildDup();syncKnown();touchStreak();home();pull();startTips();
 try{if(!PNAME&&!localStorage.getItem('zhA1skip'))setTimeout(profOpen,500)}catch(e){}
 </script>

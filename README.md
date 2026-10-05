@@ -28,7 +28,7 @@
 | ❓ **Quiz variés** | Dictée, pinyin à taper (**mode facile** : première lettre affichée ; **mode difficile** : aucune aide), phrases à trous, phrases à remettre en ordre, courbes de tons, et bouton **« Je ne sais pas »** sans pénalité. |
 | 🔁 **Répétition espacée** | Les mots reviennent à 1, 2, 4, 8, 16 puis 32 jours. Un mot n'est « connu » qu'après **2 réussites dans 2 types de questions différents**. |
 | 📝 **Test de niveau** | 2 questions par mot, résultats prudents, estimation honnête du temps restant selon ton rythme (mots par jour ou par semaine). |
-| 🧱 **Grammaire** | 15 + 16 + 16 leçons avec exemples sonorisés, exercice d'ordre des mots, nuances entre verbes proches (去/来, 借/还, 遇到/碰到…). |
+| 🧱 **Grammaire** | 15 + 16 + 16 **leçons indépendantes**, placées dans le parcours à côté du vocabulaire qui leur est lié (ex. « Mots interrogatifs » près du thème *Poser des questions*), chacune avec son exercice d'ordre des mots ; 15 + 16 + 16 leçons avec exemples sonorisés, exercice d'ordre des mots, nuances entre verbes proches (去/来, 借/还, 遇到/碰到…). |
 | 🈶 **Caractères** | Logique et philosophie de l'écriture, ordre des traits, 50 caractères à tracer à la main. |
 | 🎙️ **Voix d'homme naturelle** | 1 319 MP3 pré-générés (voix neuronale Yunxi) ; repli automatique sur la voix du navigateur. |
 | 👤 **Compte & sauvegarde sans perte** | Un nom + un mot de passe (clé dérivée dans le navigateur, jamais envoyée en clair) pour retrouver ta progression sur tous tes appareils ; fusion intelligente et copies de secours. Proposé dès la première visite. |
