@@ -25,7 +25,7 @@
 | ⭐ **Priorités** | Choisis les thèmes à travailler en premier (ex. *Se présenter, Restaurant, Fruits & légumes, Taxi*) : ils passent devant dans les révisions et le plan. |
 | 🎧 **Gym des tons** | 8 étapes progressives, courbes de ton **animées** synchronisées avec le son, comparaison de ton choix et du bon ton, puis mots de 2 syllabes. |
 | 🔍 **Infobulles** | Survole (ou touche) un caractère **ou son pinyin** : le **mot** et son sens, la **combinaison** de ses caractères (ex. 买单 = acheter + note → l'addition), puis le caractère survolé avec ses **composants** (radical + phonétique) et une **astuce mnémotechnique** (ex. 好 = une femme 女 avec son enfant 子). Plus de 800 caractères expliqués en français. |
-| ❓ **Quiz variés** | Dictée, pinyin à taper, phrases à trous, phrases à remettre en ordre, courbes de tons, et bouton **« Je ne sais pas »** sans pénalité. |
+| ❓ **Quiz variés** | Dictée, pinyin à taper (**mode facile** : première lettre affichée ; **mode difficile** : aucune aide), phrases à trous, phrases à remettre en ordre, courbes de tons, et bouton **« Je ne sais pas »** sans pénalité. |
 | 🔁 **Répétition espacée** | Les mots reviennent à 1, 2, 4, 8, 16 puis 32 jours. Un mot n'est « connu » qu'après **2 réussites dans 2 types de questions différents**. |
 | 📝 **Test de niveau** | 2 questions par mot, résultats prudents, estimation honnête du temps restant selon ton rythme (mots par jour ou par semaine). |
 | 🧱 **Grammaire** | 15 + 16 + 16 leçons avec exemples sonorisés, exercice d'ordre des mots, nuances entre verbes proches (去/来, 借/还, 遇到/碰到…). |
