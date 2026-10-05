@@ -124,7 +124,7 @@ nav#bn button:hover{background:#fff3d6}
 .num{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--red);color:#fff;font-size:.85rem;margin-right:8px}
 .cat.next{background:var(--ink);color:#fff;border-left-color:var(--gold);margin:8px 0}.cat.next small{color:#ddd}.cat.next .ic{font-size:1.6rem}
 .seq{min-height:48px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:10px 0;padding:8px;border-radius:12px;background:#fff3d6}
-.chip{background:#fff;border:2px solid #ddd;border-radius:10px;padding:8px 14px;font-size:1.4rem;cursor:pointer}.chip.on{border-color:var(--gold)}
+.chip{background:#fff;border:2px solid #ddd;border-radius:10px;padding:8px 14px;font-size:1.4rem;cursor:pointer}.chip.on{border-color:var(--gold)}.chip{display:inline-flex;flex-direction:column;align-items:center;line-height:1.15}.chip .cpy{font-size:.7rem;color:var(--red);font-weight:600;margin-top:2px}
 .lst{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:6px 10px}
 .rows .row,.lst .row{margin:0}
 .tiles{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
@@ -930,11 +930,11 @@ function gDone(i){const A=GL==="A2",B=GL==="B1",g=S.mod[B?"g3":A?"g2":"g"];g[i]=
 let SE;
 function sentence(){cur=sentence;
   const all=(GLS!=null?GLV[GL].G()[GLS][2]:(GL==="B1"?GRAM3:GL==="A2"?GRAM2:GRAM).flatMap(l=>l[2])).filter(e=>e[0].split("/").length>=3);const e=all[Math.random()*all.length|0];
-  SE={w:e[0].split("/"),pick:[],e};SE.bank=shuffle(SE.w.map((x,i)=>({x,i})));seDraw()}
+  SE={w:e[0].split("/"),pick:[],e,py:segPin(e)};SE.bank=shuffle(SE.w.map((x,i)=>({x,i})));seDraw()}
 function seDraw(){const done=SE.pick.length===SE.w.length;
   $.innerHTML=`<div class="tabs"><button class="alt" onclick="${GLS!=null?`gLesson(GL,GLS)`:`gram(GL)`}">← ${GLS!=null?"Leçon":"Grammaire"}</button></div><div class="q"><h3>🧩 Remets la phrase en ordre</h3><p class="fr">${SE.e[2]}</p>
-  <div class="seq">${SE.pick.map(p=>`<span class="chip on" onclick="seUndo(${p.i})">${p.x}</span>`).join("")||"<small style='color:var(--mut)'>Touche les mots dans l'ordre…</small>"}</div>
-  <div class="seq">${SE.bank.filter(b=>!SE.pick.includes(b)).map(b=>`<span class="chip" onclick="sePick(${b.i})">${b.x}</span>`).join("")}</div>
+  <div class="seq">${SE.pick.map(p=>`<span class="chip on" onclick="seUndo(${p.i})">${chipH(p.x,SE.py,p.i)}</span>`).join("")||"<small style='color:var(--mut)'>Touche les mots dans l'ordre…</small>"}</div>
+  <div class="seq">${SE.bank.filter(b=>!SE.pick.includes(b)).map(b=>`<span class="chip" onclick="sePick(${b.i})">${chipH(b.x,SE.py,b.i)}</span>`).join("")}</div>
   ${done?`<p style="font-size:1.1rem"><b>${SE.pick.every((p,k)=>p.i===k)?"✅ Bravo !":"❌ Pas tout à fait."}</b><br><span class="py2">${SE.e[1]}</span><br>${SE.w.join("")}</p><div class="nav"><button class="speak" onclick="say('${SE.w.join("").replace(/[?]/g,"")}')">🔊</button><button onclick="sentence()">Suivant ▶</button></div>`:""}</div>`;
   if(done&&SE.pick.every((p,k)=>p.i===k)){beep(1);addXp(2)}}
 function sePick(i){SE.pick.push(SE.bank.find(b=>b.i===i));seDraw()}
@@ -1047,7 +1047,7 @@ const gramEx=()=>(LV()==="B1"?GRAM3:LV()==="A2"?GRAM2:GRAM).flatMap(l=>l[2]).fil
 function mkCloze(){const arr=gramEx(),e=arr[Math.random()*arr.length|0],w=e[0].split("/"),idx=Math.random()*w.length|0,ans=w[idx];
   const pool=[...new Set(arr.flatMap(x=>x[0].split("/")).filter(x=>x!==ans))],opts=shuffle([ans,...shuffle(pool).slice(0,3)]);
   return {t:"z",w,ans,fr:e[2],full:w.join(""),pin:e[1],sentence:w.map((x,i)=>i===idx?"＿＿":x).join(" "),opts,right:opts.indexOf(ans),say:w.join("")}}
-function mkOrder(){const arr=gramEx(),e=arr[Math.random()*arr.length|0],w=e[0].split("/");return {t:"o",w,full:w.join(""),pin:e[1],fr:e[2],pick:[],bank:shuffle(w.map((x,i)=>({x,i}))),right:-1,say:w.join("")}}
+function mkOrder(){const arr=gramEx(),e=arr[Math.random()*arr.length|0],w=e[0].split("/");return {t:"o",w,py:segPin(e),full:w.join(""),pin:e[1],fr:e[2],pick:[],bank:shuffle(w.map((x,i)=>({x,i}))),right:-1,say:w.join("")}}
 function mkTone(){const w=shuffle(TW.filter(x=>x[4]!==false))[0],c=w[1].map(x=>x[1]),all=[];for(let a=1;a<=4;a++)for(let b=0;b<=4;b++)all.push([a,b]);
   const pool=shuffle(all.filter(p=>p.join()!==c.join()&&(c[1]===0||p[1]!==0))),opts=shuffle([c,...pool.slice(0,3)]);return {t:"n",w,c,opts,right:opts.findIndex(o=>o.join()===c.join()),say:w[0]}}
 function evid(it,cid,t,ok){const k=nk(it[0]),E=S.ev=S.ev||{};if(!ok){delete E[k];return null}const a=E[k]||[];if(!a.includes(t))a.push(t);E[k]=a;
@@ -1081,7 +1081,7 @@ function qShow(){if(Q.i>=Q.qs.length)return qEnd();Q.lock=0;clearTimeout(Q.tm);c
   if(t==="o")ordDraw();if(t==="p")setTimeout(()=>{const e=document.getElementById("pin");e&&e.focus()},50);
   if(["c","d","n"].includes(t))setTimeout(()=>say(q.say),300)}
 function ordDraw(){const q=Q.qs[Q.i],el=document.getElementById("oq");if(!el||Q.lock)return;
-  el.innerHTML=`<div class="seq">${q.pick.map(x=>`<span class="chip on" onclick="ordUndo(${x.i})">${x.x}</span>`).join("")||"<small style='color:var(--mut)'>Touche les mots dans l'ordre…</small>"}</div><div class="seq">${q.bank.filter(b=>!q.pick.includes(b)).map(b=>`<span class="chip" onclick="ordPick(${b.i})">${b.x}</span>`).join("")}</div>${q.pick.length===q.w.length?`<div class="nav"><button onclick="ordCheck()">Valider</button></div>`:""}`}
+  el.innerHTML=`<div class="seq">${q.pick.map(x=>`<span class="chip on" onclick="ordUndo(${x.i})">${chipH(x.x,q.py,x.i)}</span>`).join("")||"<small style='color:var(--mut)'>Touche les mots dans l'ordre…</small>"}</div><div class="seq">${q.bank.filter(b=>!q.pick.includes(b)).map(b=>`<span class="chip" onclick="ordPick(${b.i})">${chipH(b.x,q.py,b.i)}</span>`).join("")}</div>${q.pick.length===q.w.length?`<div class="nav"><button onclick="ordCheck()">Valider</button></div>`:""}`}
 function ordPick(i){const q=Q.qs[Q.i];if(Q.lock)return;q.pick.push(q.bank.find(b=>b.i===i));ordDraw()}
 function ordUndo(i){const q=Q.qs[Q.i];if(Q.lock)return;q.pick=q.pick.filter(x=>x.i!==i);ordDraw()}
 function ordCheck(){const q=Q.qs[Q.i];qDone(q.pick.length===q.w.length&&q.pick.every((x,k)=>x.i===k),false,-1)}
@@ -1400,6 +1400,11 @@ const VOW="aeiouüāáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ",SYLRE=new Re
 function sylOf(w,j,e,pin){const c=[...w][j],p=e&&e.p?e.p.replace(/[?!…。，,]/g,"").trim():"";
   if(p){let t=p.split(/[\s·]+/).filter(Boolean);if(t.length!==[...w].length)t=p.match(SYLRE)||[];if(t.length===[...w].length)return t[j]}
   return pin(c)}
+function segPin(e){const w=e[0].split("/"),n=w.join("").length,p=e[1].replace(/'/g,"").replace(/[?!.,，。…]/g," ").trim();
+  const sy=p.replace(/\s+/g,"").match(SYLRE)||[];
+  if(sy.length===n){let k=0;return w.map(x=>{const r=sy.slice(k,k+x.length).join("");k+=x.length;return r})}
+  const t=p.split(/\s+/).filter(Boolean);return t.length===w.length?t:null}
+const chipH=(x,py,i)=>x+(S.py&&py&&py[i]?`<small class="cpy">${py[i]}</small>`:"");
 function startTips(){const tip=document.createElement("div");tip.id="tip";document.body.appendChild(tip);let last="";
   const place=(x,y)=>{const r=tip.getBoundingClientRect();tip.style.left=Math.max(6,Math.min(x+14,innerWidth-r.width-6))+"px";tip.style.top=(y+18+r.height>innerHeight?Math.max(6,y-r.height-12):y+18)+"px"};
   const hide=()=>{tip.style.display="none";last=""};
