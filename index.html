@@ -218,6 +218,7 @@ nav#bn{flex-wrap:nowrap}nav#bn button{white-space:nowrap;min-width:0}
 .lb-leave{font-size:.82rem;color:var(--mut);text-decoration:underline;cursor:pointer}
 @media(max-width:600px){nav#bn button{font-size:.78rem;padding:10px 2px}}
 @media(max-width:600px){.top2 .cat.next small{display:none}}
+@media(hover:none){#tip{pointer-events:auto;-webkit-user-select:text;user-select:text}.tcb{margin-top:8px;padding:6px 12px;border:0;border-radius:8px;background:#ffffff26;color:#fff;font-weight:600;font-size:.85rem}}
 @media(max-width:600px){select,input[type=text],input:not([type]){min-height:42px;font-size:16px}button{min-height:38px}#tip{max-width:calc(100vw - 16px)}}
 .q+.tiles{margin-top:16px}
 .pc small{display:block;margin:4px 0 2px;line-height:1.45}
@@ -1507,11 +1508,12 @@ function startTips(){const tip=document.createElement("div");tip.id="tip";docume
       `<div class="tp">🔗 ${a.map((c,j)=>`<b class="cm">${c}</b> <span>${sylOf(wd,j,e,pin)}</span> ${partM(wd,j,c,pin)}`).join(" <b>+</b> ")}${e&&e.f[0]?` → <i>${cshort(sh(e.f[0]))}</i>`:""}${COMBO[wd]&&COMBO[wd].n?`<div class="dc">ℹ️ ${COMBO[wd].n}</div>`:""}</div>`+
       `<div class="tp"><b class="cm">${ch}</b> ${pin(ch)} · ${cmean(ch)?cshort(cmean(ch)):""}${decompHTML(ch)}</div>`}
     else html=tipFor(ch);
+    if(matchMedia("(hover:none)").matches)html+=`<button class="tcb" onclick="navigator.clipboard&&navigator.clipboard.writeText('${wd}');toast('Copié')">📋 Copier ${wd}</button>`;
     tip.innerHTML=html;tip.style.display="block";place(x,y)};
   const upd=e=>{const h=e.target.closest&&e.target.closest(".hz,.pyh");if(h)show(h,e.clientX,e.clientY);else hide()};
   document.addEventListener("mouseover",upd);
   document.addEventListener("mousemove",e=>{if(matchMedia("(hover:none)").matches)return;if(tip.style.display==="block"||e.target.closest&&e.target.closest(".hz,.pyh"))upd(e)});
-  document.addEventListener("click",e=>{const h=e.target.closest&&e.target.closest(".hz,.pyh");if(h&&matchMedia("(hover:none)").matches){show(h,e.clientX,e.clientY-30);clearTimeout(tipT);tipT=setTimeout(hide,3500)}else if(!h)hide()});
+  document.addEventListener("click",e=>{if(e.target.closest&&e.target.closest("#tip"))return;const h=e.target.closest&&e.target.closest(".hz,.pyh");if(h&&matchMedia("(hover:none)").matches){show(h,e.clientX,e.clientY-30);clearTimeout(tipT);tipT=setTimeout(hide,15000)}else if(!h)hide()});
   let raf=0;new MutationObserver(()=>{if(ANN)return;cancelAnimationFrame(raf);raf=requestAnimationFrame(annotate)}).observe(document.getElementById("app"),{childList:true,subtree:true});annotate()}
 
 // ---- Niveau B1
