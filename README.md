@@ -23,6 +23,7 @@
 |---|---|
 | 🗺️ **Parcours guidé** | 3 niveaux (A1, A2, B1) en étapes logiques, avec un bandeau « prochaine étape » et un tableau de bord (niveau, XP, série de jours, objectif du jour, date estimée de fin). |
 | ⭐ **Priorités** | Choisis les thèmes à travailler en premier (ex. *Se présenter, Restaurant, Fruits & légumes, Taxi*) : ils passent devant dans les révisions et le plan. |
+| 🔀 **Sons qui changent** | Onglet du chapitre Pinyin : u (« ou » ou u français), i (3 sons), e, a, o, finales cachées (iu, ui, un), y/w, avec ou sans souffle, avec 80 mots sonorisés. |
 | 🎧 **Gym des tons** | 8 étapes progressives, courbes de ton **animées** synchronisées avec le son, comparaison de ton choix et du bon ton, puis mots de 2 syllabes. |
 | 🔍 **Infobulles** | Survole (ou touche) un caractère **ou son pinyin** : le **mot** et son sens, la **combinaison** de ses caractères (ex. 买单 = acheter + note → l'addition), puis le caractère survolé avec ses **composants** (radical + phonétique) et une **astuce mnémotechnique** (ex. 好 = une femme 女 avec son enfant 子). Plus de 800 caractères expliqués en français. |
 | ❓ **Quiz variés** | Dictée, pinyin à taper (**mode facile** : première lettre affichée ; **mode difficile** : aucune aide), phrases à trous, phrases à remettre en ordre, courbes de tons, et bouton **« Je ne sais pas »** sans pénalité. |
